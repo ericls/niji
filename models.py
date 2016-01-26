@@ -16,6 +16,7 @@ def render_content(content_raw, sender):
     :param sender: user as username
     :return: (rendered_content, mentioned_user_list)
     """
+    # TODO: replace html to link to user
     content_rendered = mistune.markdown(content_raw)
     mentioned = list(set(re.findall(MENTION_REGEX, content_raw)))
     mentioned = [x for x in mentioned if x != sender]
@@ -144,6 +145,19 @@ class Appendix(models.Model):
     pub_date = models.DateTimeField(auto_now_add=True)
     content_raw = models.TextField()
     content_rendered = models.TextField(default='', blank=True)
+
+    raw_content_hash = None
+
+    def __init__(self, *args, **kwargs):
+        super(Appendix, self).__init__(*args, **kwargs)
+        self.raw_content_hash = xxhash.xxh64(self.content_raw).hexdigest()
+
+    def save(self, *args, **kwargs):
+        new_hash = xxhash.xxh64(self.content_raw).hexdigest()
+        if new_hash != self.raw_content_hash or (not self.pk):
+            self.content_rendered = mistune.markdown(self.content_raw)
+        super(Appendix, self).save(*args, **kwargs)
+        self.raw_content_hash = new_hash
 
     def __str__(self):
         return 'Appendix to %s' % self.topic.title

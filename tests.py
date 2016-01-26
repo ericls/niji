@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import Topic, Node, Post, Notification
+from .models import Topic, Node, Post, Notification, Appendix
 from django.test.utils import override_settings
 
 
@@ -190,3 +190,31 @@ class PostModelTest(TestCase):
             topic=self.t1,
         )
         self.assertEqual(self.u1.received_notifications.count(), 0)
+
+
+class AppendixModelTest(TestCase):
+
+    def setUp(self):
+        self.n1 = Node.objects.create(
+            title='TestNodeOne',
+            description='The first test node'
+        )
+        self.u1 = User.objects.create_user(
+            username='test1', email='1@q.com', password='111'
+        )
+        self.t1 = Topic.objects.create(
+            title='Test Topic 1',
+            user=self.u1,
+            content_raw='This is test topic __1__',
+            node=self.n1,
+        )
+        self.a1 = Appendix.objects.create(
+            topic=self.t1,
+            content_raw='appendix to topic __1__',
+        )
+
+    def test_content_render(self):
+        self.assertIn('<strong>1</strong>', self.a1.content_rendered)
+        self.a1.content_raw = 'appendix to the __first__ topic'
+        self.a1.save()
+        self.assertIn('<strong>first</strong>', self.a1.content_rendered)
