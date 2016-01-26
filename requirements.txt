@@ -3,3 +3,4 @@ mistune
 wheel>=0.24.0
 Django>=1.9
 xxhash==0.4.3
+celery[redis]

@@ -1,21 +1,24 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
+from niji.tasks import notify
 import xxhash
 import mistune
 import re
 
 
-MENTION_REGEX = re.compile(r'@(\S+)\s', re.M)
+MENTION_REGEX = re.compile(r'@(\S+)', re.M)
 
 
-def render_content(content_raw):
+def render_content(content_raw, sender):
     """
     :param content_raw: Raw content
+    :param sender: user as username
     :return: (rendered_content, mentioned_user_list)
     """
     content_rendered = mistune.markdown(content_raw)
-    mentioned = set(re.findall(MENTION_REGEX, content_raw))
+    mentioned = list(set(re.findall(MENTION_REGEX, content_raw)))
+    mentioned = [x for x in mentioned if x != sender]
     mentioned_users = User.objects.filter(username__in=mentioned)
     return content_rendered, mentioned_users
 
@@ -58,11 +61,14 @@ class Topic(models.Model):
 
     def save(self, *args, **kwargs):
         new_hash = xxhash.xxh64(self.content_raw).hexdigest()
+        mentioned_users = []
         if new_hash != self.raw_content_hash or (not self.pk):
             # To (re-)render the content if content changed or topic is newly created
-            self.content_rendered, mentioned_users = render_content(self.content_raw)
+            self.content_rendered, mentioned_users = render_content(self.content_raw, sender=self.user.username)
         super(Topic, self).save(*args, **kwargs)
         self.raw_content_hash = new_hash
+        for to in mentioned_users:
+                notify.delay(to=to.username, sender=self.user.username, topic=self.pk)
 
     class Meta:
         ordering = ['order', '-pub_date']
@@ -100,13 +106,16 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
         new_hash = xxhash.xxh64(self.content_raw).hexdigest()
+        mentioned_users = []
         if new_hash != self.raw_content_hash or (not self.pk):
-            self.content_rendered, mentioned_users = render_content(self.content_raw)
+            self.content_rendered, mentioned_users = render_content(self.content_raw, sender=self.user.username)
         super(Post, self).save(*args, **kwargs)
         t = self.topic
         t.reply_count = t.get_reply_count()
         t.last_replied = t.get_last_replied()
         t.save(update_fields=['last_replied', 'reply_count'])
+        for to in mentioned_users:
+                notify.delay(to=to.username, sender=self.user.username, post=self.pk)
 
     def delete(self, *args, **kwargs):
         super(Post, self).delete(*args, **kwargs)
@@ -120,7 +129,7 @@ class Post(models.Model):
 class Notification(models.Model):
     sender = models.ForeignKey(User, related_name='sent_notifications')
     to = models.ForeignKey(User, related_name='received_notifications')
-    topic = models.ForeignKey('Topic')
+    topic = models.ForeignKey('Topic', null=True)
     post = models.ForeignKey('Post', null=True)
     read = models.BooleanField(default=False)
     pub_date = models.DateTimeField(auto_now_add=True)

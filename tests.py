@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from .models import Topic, Node, Post, Notification
+from django.test.utils import override_settings
 
 
 class TopicModelTest(TestCase):
@@ -93,6 +94,9 @@ class TopicModelTest(TestCase):
         p.delete()
         self.assertEqual(self.t1.reply_count, 1)
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                       CELERY_ALWAYS_EAGER=True,
+                       BROKER_BACKEND='memory')
     def test_other_user_mention(self):
         t = Topic.objects.create(
             title='topic mention test',
@@ -106,6 +110,9 @@ class TopicModelTest(TestCase):
         self.assertEqual(notification.sender_id, self.u1.pk)
         self.assertEqual(notification.to_id, self.u2.pk)
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                       CELERY_ALWAYS_EAGER=True,
+                       BROKER_BACKEND='memory')
     def test_self_mention(self):
         Topic.objects.create(
             title='topic mention test',
@@ -158,6 +165,9 @@ class PostModelTest(TestCase):
         self.p1.save()
         self.assertEqual(self.t1.replies.visible().count(), 1)
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                       CELERY_ALWAYS_EAGER=True,
+                       BROKER_BACKEND='memory')
     def test_other_user_mention(self):
         p = Post.objects.create(
             user=self.u1,
@@ -170,6 +180,9 @@ class PostModelTest(TestCase):
         self.assertEqual(notification.sender_id, self.u1.pk)
         self.assertEqual(notification.to_id, self.u2.pk)
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                       CELERY_ALWAYS_EAGER=True,
+                       BROKER_BACKEND='memory')
     def test_self_mention(self):
         Post.objects.create(
             user=self.u1,
