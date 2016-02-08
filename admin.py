@@ -15,4 +15,4 @@ class TopicAdmin(admin.ModelAdmin):
     ]
 
 admin.site.register(Topic, TopicAdmin)
-admin.site.register(Node, TopicAdmin)
+admin.site.register(Node)
