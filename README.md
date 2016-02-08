@@ -32,8 +32,21 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 INSTALLED_APPS = [
     ....
+    'django.contrib.humanize',
     'crispy_forms',
     'niji',
+]
+```
+
+### Include urls to project's `urls.py`
+
+```
+from django.conf.urls import url, include
+from niji import urls as niji_urls
+
+urlpatterns = [
+    ...
+    url(r'', include(niji_urls, namespace="niji")),
 ]
 ```
 
