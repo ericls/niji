@@ -1,4 +1,7 @@
-from django.test import TestCase
+from django.test import TestCase, LiveServerTestCase
+from django.utils.translation import ugettext as _
+from selenium.webdriver.firefox.webdriver import WebDriver
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from .models import Topic, Node, Post, Notification, Appendix
 from django.test.utils import override_settings
@@ -218,3 +221,53 @@ class AppendixModelTest(TestCase):
         self.a1.content_raw = 'appendix to the __first__ topic'
         self.a1.save()
         self.assertIn('<strong>first</strong>', self.a1.content_rendered)
+
+
+class VisitorTest(LiveServerTestCase):
+    """
+    Test as a visitor (unregistered user)
+    """
+
+    def setUp(self):
+        self.browser = WebDriver()
+        self.browser.implicitly_wait(3)
+        self.n1 = Node.objects.create(
+            title='TestNodeOne',
+            description='The first test node'
+        )
+        self.u1 = User.objects.create_user(
+            username='test1', email='1@q.com', password='111'
+        )
+        self.u2 = User.objects.create_user(
+            username='test2', email='2@q.com', password='222'
+        )
+
+        # Create 99 topics
+        for i in range(1, 100):
+            setattr(
+                self,
+                't%s' % i,
+                Topic.objects.create(
+                    title='Test Topic %s' % i,
+                    user=self.u1,
+                    content_raw='This is test _topic __%s__' % i,
+                    node=self.n1
+                )
+            )
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_index(self):
+        self.browser.get(self.live_server_url+reverse('niji:index'))
+        body = self.browser.find_element_by_tag_name('body')
+        self.assertIn('niji', body)
+
+    def test_topic_page(self):
+        pass
+
+    def test_node_page(self):
+        pass
+
+    def test_pagination(self):
+        pass

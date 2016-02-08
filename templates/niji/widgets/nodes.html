@@ -1,0 +1,11 @@
+{% load i18n %}
+<div class="panel panel-default">
+    <div class="panel-heading">{% trans "Nodes" %}</div>
+    <div class="panel-body">
+        {% for node in nodes %}
+            <a href="{% url 'niji:node' node.pk %}">
+                <span class="label label-default meta-node">{{ node.title }}</span>
+            </a>
+        {% endfor %}
+    </div>
+</div>

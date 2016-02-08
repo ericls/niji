@@ -1,0 +1,65 @@
+{% extends 'niji/base.html' %}
+{% load i18n %}
+{% load humanize %}
+{% load niji_tags %}
+
+{% block left %}
+    {% include 'niji/includes/user_info_panel.html' %}
+    <div class="panel panel-default">
+        <div class="panel-body panel-subtitle">
+            <span class="label label-success">{% trans "Topics" %}-{{ user.username }}</span>
+        </div>
+        <!-- List group -->
+        <ul class="list-group topic-list">
+            {% for topic in topics %}
+                <li class="list-group-item topic-entry">
+                    <div class="entry row">
+                        <div class="col-md-10 col-lg-10 col-xs-9">
+                            <a href="{% url 'niji:topic' pk=topic.pk %}" class="entry-link">
+                                {{ topic.title }}
+                            </a>
+                            <p class="entry-meta">
+                                <a href="{% url 'niji:node' topic.node.pk %}">
+                                        <span class="label label-default meta-node">
+                                        {{ topic.node.title }}
+                                        </span>
+                                </a>
+                                    <span class="meta meta-pub_date">
+                                        {{ topic.pub_date | naturaltime }}
+                                    </span>
+                                    <span class="meta meta-last_replied hidden-xs">
+                                        {% trans "Last Replied" %}: {{ topic.last_replied | naturaltime }}
+                                    </span>
+                            </p>
+                        </div>
+                        <div class="col-xs-1 entry-reply-count hidden-xs">
+                            <span class="badge">{{ topic.reply_count }}</span>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+            <li class="list-group-item">
+                <a href="{% url 'niji:user_topics' user.pk %}" class="text-muted">{% trans "More topics from this user" %}</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-body panel-subtitle">
+            <span class="label label-success">{% trans "Replies" %}-{{ user.username }}</span>
+        </div>
+        <!-- List group -->
+        <ul class="list-group topic-list">
+            {% for reply in replies %}
+                <li class="list-group-item reply-entry reply-entry-title">
+                    {% trans "Replied to" %}
+                    <a href="{% url 'niji:user_topics' pk=reply.topic.pk %}">{{ reply.topic.title }}</a>
+                    <span class="pull-right">{{ reply.pub_date | naturaltime }}</span>
+                </li>
+                <li class="list-group-item reply-entry reply-entry-content">
+                    <p>{{ reply.content_rendered | safe }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

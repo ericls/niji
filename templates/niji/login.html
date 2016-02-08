@@ -1,0 +1,27 @@
+{% extends 'niji/base.html' %}
+{% load i18n %}
+{% block left %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {% if messages %}
+                <ul class="list-group">
+                    {% for message in messages %}
+                        <li class="list-group-item {{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <form method="post" action="{% url "niji:login" %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="usernameInput">{% trans "Username" %}</label>
+                    <input type="text" name="username" class="form-control" id="usernameInput" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label for="InputPassword1">{% trans "Password" %}</label>
+                    <input type="password" name="password" class="form-control" id="InputPassword1" placeholder="">
+                </div>
+                <button type="submit" class="btn btn-default">{% trans "Submit" %}</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

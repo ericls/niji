@@ -1,0 +1,9 @@
+{% load i18n %}
+<div class="panel panel-default">
+    <div class="panel-heading">{{ node.title }}</div>
+    <div class="panel-body">
+        <p>
+            {{ node.description | safe }}
+        </p>
+    </div>
+</div>

@@ -1,0 +1,54 @@
+{% extends 'niji/base.html' %}
+{% load i18n %}
+{% load niji_tags %}
+{% load humanize %}
+
+{% block left %}
+    <div class="panel panel-default">
+        <div class="panel-body panel-subtitle">
+            <span class="label label-success">{% trans "Notifications" %}</span>
+        </div>
+        <!-- List group -->
+        <ul class="list-group topic-list">
+            {% for notification in notifications %}
+                <li class="list-group-item notification-entry">
+                    <div class="row">
+                        <div class="col-xs-1">
+                            <img src="{% gravatar_url notification.sender 28 %}">
+                        </div>
+                        <div class="col-xs-11">
+                            <div class="notification-meta">
+                                <a href="{% url 'niji:user_info' notification.sender_id %}">
+                                    {{ notification.sender.username }}
+                                </a>
+                                {% trans "mentioned you" %}
+                                {% if notification.topic %}
+                                    {% trans "in topic" %}
+                                    <a href="{% url 'niji:topic' notification.topic_id %}">
+                                        {{ notification.topic.title }}
+                                    </a>
+                                {% else %}
+                                    {% trans 'when replying to' %}
+                                    <a href="{% url 'niji:topic' notification.post.topic_id %}">
+                                        {{ notification.post.topic.title }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                            <div class="notification-content">
+                                {% if notification.topic_id %}
+                                    {{ notification.topic.content_rendered | safe | truncatewords_html:30 }}
+                                {% endif %}
+                                {% if notification.post_id %}
+                                    {{ notification.post.content_rendered | safe | truncatewords_html:30 }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="panel-footer">
+            {% get_pagination %}
+        </div>
+    </div>
+{% endblock %}

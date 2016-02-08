@@ -1,0 +1,20 @@
+{% load i18n %}
+<div class="panel panel-default">
+    <div class="panel-heading">NIJI APP</div>
+    <div class="panel-body">
+        NIJI is a forum app built with Django
+        <hr/>
+        <div class="row">
+            <div class="col-md-6">
+                <a href="{% url 'niji:login' %}" class="btn btn-block btn-info">{% trans 'Log in' %}</a>
+            </div>
+            <div class="col-md-6">
+                <a href="{% url 'niji:reg' %}" class="btn btn-block btn-default">{% trans 'Reg' %}</a>
+            </div>
+        </div>
+        <hr/>
+{#        <p>#}
+{#            <a href="#">Reset Password</a>#}
+{#        </p>#}
+    </div>
+</div>

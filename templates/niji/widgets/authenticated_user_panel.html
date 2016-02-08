@@ -1,0 +1,65 @@
+{% load niji_tags %}
+{% load i18n %}
+<div class="panel panel-default">
+    <!--<div class="panel-heading">NIJI APP</div>-->
+    <div class="panel-body user-panel">
+        <div class="panel-user-info">
+            <div class="avatar-name">
+                <img class="panel-avatar" src="{% gravatar_url request.user %}" alt=""/>
+                <span class="panel-username"><a href="{% url 'niji:user_info' request.user.pk %}">{{ request.user.username }}</a></span>
+            </div>
+            <div class="row panel-user-meta">
+                <div class="col-xs-4 panel-user-meta-item">
+                    <a href="{% url 'niji:user_topics' request.user.pk %}">
+                        <div class="text-center">
+                            <p class="panel-user-meta-item-value">
+                                {{ request.user.topics.count }}
+                            </p>
+                            <p class="panel-user-meta-item-title">Topics</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xs-4 panel-user-meta-item">
+                    <a href="{% url 'niji:user_info' request.user.pk %}">
+                        <div class="text-center">
+                            <p class="panel-user-meta-item-value">{{ request.user.posts.count }}</p>
+                            <p class="panel-user-meta-item-title">Replies</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xs-4 panel-user-meta-item">
+                    <a href="{% url 'niji:user_info' request.user.pk %}">
+                        <div class="text-center">
+                            <p class="panel-user-meta-item-value">{{ request.user.pk }}</p>
+                            <p class="panel-user-meta-item-title">UID</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <a href="{% url 'niji:create_topic' %}">
+                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                {% trans 'Create Topic' %}
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a class="text-success" href="{% url 'niji:notifications' %}">
+                {% if unread_count %}
+                    <span class="glyphicon glyphicon-gift" aria-hidden="true"></span>
+                    {{ unread_count }} {% trans 'unread notifications' %}
+                {% else %}
+                    <span class="text-muted">{% trans 'No unread nofitication' %}</span>
+                {% endif %}
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="{% url 'niji:logout' %}">
+                <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+                {% trans "Log out" %}
+            </a>
+        </li>
+    </ul>
+</div>

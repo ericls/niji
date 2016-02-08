@@ -1,0 +1,101 @@
+{% extends 'niji/base.html' %}
+{% load i18n %}
+{% load niji_tags %}
+{% load humanize %}
+
+{% block left %}
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-body">
+            <ol class="breadcrumb">
+                <li><a href="{% url 'niji:index' %}">Home</a></li>
+                <li><a href="{% url 'niji:node' pk=topic.node.pk %}">{{ topic.node.title }}</a></li>
+                <li class="active">{{ topic.title }}</li>
+            </ol>
+            <h1 class="topic-title">{{ topic.title }}</h1>
+            <div class="topic-meta row">
+                <div class="col-xs-2 col-sm-1">
+                    <img src="{% gravatar_url topic.user %}" alt=""/>
+                </div>
+                <div class="col-xs-9 col-sm-10">
+                    <p class="text-muted">
+                        <a href="{% url 'niji:user_info' topic.user.pk %}">{{ topic.user.username }}</a> <br/>
+                        <span>{{ topic.pub_date | naturaltime }} in <a class="text-muted" href="{% url 'niji:node' pk=topic.node.pk %}">{{ topic.node.title }}</a></span>
+                    </p>
+                </div>
+            </div>
+            <div class="topic-content">
+                <p>{{ topic.content_rendered | safe}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Replies</div>
+        <!-- List group -->
+        <ul class="list-group reply-list">
+            {% for post in posts %}
+                <li class="list-group-item reply-item">
+                    <div class="topic-meta row">
+                        <div class="col-xs-2 col-sm-1">
+                            <img src="{% gravatar_url post.user %}" alt=""/>
+                        </div>
+                        <div class="col-xs-9 col-sm-10">
+                            <p class="text-muted">
+                                <a href="{% url 'niji:user_info' post.user_id %}">{{ post.user }}</a> <br/>
+                                <span>{{ post.pub_date | naturaltime }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="reply-content">
+                        <p>
+                            {{ post.content_rendered | safe}}
+                        </p>
+                    </div>
+                    <p class="reply-link">
+                        <a href="#" data-username="{{ post.user.username }}" class="reply-to">{% trans "Reply" %}</a>
+                    </p>
+                </li>
+            {% endfor %}
+        {% if not posts %}
+            <li class="list-group-item reply-item"><p>{% trans "Be the first to reply!" %}</p></li>
+        {% endif %}
+        </ul>
+        <div class="panel-footer">
+            {% get_pagination %}
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Add a Reply</div>
+        <div class="panel-body">
+            {% if request.user.is_authenticated %}
+                <form action="{% url 'niji:reply' pk=topic.pk %}" method="POST">
+                {% csrf_token %}
+                    <div class="form-group">
+                        <label for="reply-content-input" class="hidden">Content</label>
+                        <textarea id="reply-content-input" name="content" class="form-control" rows="6"></textarea>
+                        <p class="help-block">Markdown enabled</p>
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+            {% else %}
+                <p>{% trans "Please log in." %}</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block widget_after %}
+{% include 'niji/widgets/node_info.html' %}
+{% endblock %}
+
+{% block footer_ext %}
+    <script>
+    $(document).ready(function(){
+        $('.reply-to').click(function(e){
+            e.preventDefault();
+            var box = $("#reply-content-input");
+            box.val(box.val() + "@"+$(this).data('username')+"\n");
+        });
+    });
+    </script>
+{% endblock %}

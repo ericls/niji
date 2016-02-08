@@ -1,0 +1,14 @@
+{% load niji_tags %}
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-2 col-sm-1">
+                <img src="{% gravatar_url user %}" alt=""/>
+            </div>
+            <div class="col-xs-9 col-sm-10">
+                <p>{{ user.username }}</p>
+                <p>UID: {{ user.pk }}</p>
+            </div>
+        </div>
+    </div>
+</div>
