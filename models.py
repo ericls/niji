@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-import six
-if six.PY2:
-    import sys
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
 from django.db import models
+from django.db.models import F
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
 from niji.tasks import notify
 import xxhash
 import mistune
 import re
+import six
+if six.PY2:
+    import sys
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
 
 
 MENTION_REGEX = re.compile(r'@(\S+)', re.M)
@@ -65,6 +66,9 @@ class Topic(models.Model):
         if last_visible_reply:
             return last_visible_reply.pub_date
         return self.pub_date
+
+    def increase_view_count(self):
+        Topic.objects.filter(pk=self.id).update(view_count=F('view_count') + 1)
 
     def save(self, *args, **kwargs):
         new_hash = xxhash.xxh64(self.content_raw).hexdigest()

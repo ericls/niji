@@ -20,7 +20,8 @@
                 <div class="col-xs-9 col-sm-10">
                     <p class="text-muted">
                         <a href="{% url 'niji:user_info' topic.user.pk %}">{{ topic.user.username }}</a> <br/>
-                        <span>{{ topic.pub_date | naturaltime }} in <a class="text-muted" href="{% url 'niji:node' pk=topic.node.pk %}">{{ topic.node.title }}</a></span>
+                        <span>Posted {{ topic.pub_date | naturaltime }} in <a class="text-primary" href="{% url 'niji:node' pk=topic.node.pk %}">{{ topic.node.title }}</a>, </span>
+                        <span>{% blocktrans with view_count=topic.view_count %}viewed {{ view_count }} times{% endblocktrans %}</span>
                     </p>
                 </div>
             </div>

@@ -59,7 +59,9 @@ class TopicView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
-        context['topic'] = Topic.objects.visible().get(pk=self.kwargs.get('pk'))
+        current = Topic.objects.visible().get(pk=self.kwargs.get('pk'))
+        current.increase_view_count()
+        context['topic'] = current
         context['title'] = context['topic'].title
         context['node'] = context['topic'].node
         return context
