@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^n/(?P<pk>\d+)/page/(?P<page>[0-9]+)/$', views.NodeView.as_view(), name='node'),
     url(r'^n/(?P<pk>\d+)/$', views.NodeView.as_view(), name='node'),
     url(r'^t/(?P<pk>\d+)/edit/$', views.edit_topic, name='edit_topic'),
+    url(r'^t/(?P<pk>\d+)/append/$', views.create_appendix, name='create_appendix'),
     url(r'^t/(?P<pk>\d+)/page/(?P<page>[0-9]+)/$', views.TopicView.as_view(), name='topic'),
     url(r'^t/(?P<pk>\d+)/$', views.TopicView.as_view(), name='topic'),
     url(r'^t/(?P<pk>\d+)/reply', views.create_reply, name='reply'),

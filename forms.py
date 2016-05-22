@@ -2,7 +2,7 @@
 from django.forms import ModelForm
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
-from .models import Topic
+from .models import Topic, Appendix
 from django.utils.translation import ugettext as _
 
 
@@ -45,3 +45,27 @@ class TopicEditForm(ModelForm):
         labels = {
             'content_raw': _('Content'),
         }
+
+
+class AppendixForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        self.topic = kwargs.pop('topic', None)
+        super(AppendixForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', _('Submit')))
+
+    class Meta:
+        model = Appendix
+        fields = ('content_raw', )
+        labels = {
+            'content_raw': _('Content'),
+        }
+
+    def save(self, commit=True):
+        inst = super(AppendixForm, self).save(commit=False)
+        inst.topic = self.topic
+        if commit:
+            inst.save()
+            self.save_m2m()
+        return inst

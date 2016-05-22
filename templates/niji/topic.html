@@ -28,11 +28,24 @@
                 <p>{{ topic.content_rendered | safe}}</p>
             </div>
         </div>
+        {% if topic.appendix_set %}
+            <ul class="list-group">
+                {% for appendix in topic.appendix_set.all %}
+                    <div class="list-group-item list-appendix-item">
+                        <p class="appendix-meta">
+                            {% blocktrans with number=forloop.counter %}appendix {{number}}{% endblocktrans %} {{appendix.pub_date|naturaltime}}
+                        </p>
+                        {{appendix.content_rendered | safe}}
+                    </div>
+                {% endfor %}
+            </ul>
+        {% endif %}
         {% if request.user == topic.user %}
             <div class="panel-footer">
                 {% if topic.reply_count == 0 %}
                     <a href="{% url 'niji:edit_topic' pk=topic.pk %}"><span class="label label-success">{% trans 'Edit' %}</span></a>
                 {% endif %}
+                <a href="{% url 'niji:create_appendix' pk=topic.pk %}"><span class="label label-warning">{% trans 'Append' %}</span></a>
             </div>
         {% endif %}
     </div>

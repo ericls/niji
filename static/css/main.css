@@ -92,6 +92,18 @@ div.reply-content p{
     margin-top: 1em;
 }
 
+.appendix-meta {
+	font-size: 12px;
+	line-height: 120%;
+	text-align: left;
+	color: #ccc;
+}
+
+.list-appendix-item {
+	background: #FFFFF9;
+	border-left: 3px solid #FFFBC1 !important;
+}
+
 /*User Info*/
 .reply-entry-title{
     background: #edf3f5;
