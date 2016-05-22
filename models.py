@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+import six
+if six.PY2:
+    import sys
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible

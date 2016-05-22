@@ -1,7 +1,7 @@
 from django import template
 from django.utils.html import escape
 from django.contrib.auth.models import User
-from urllib.parse import urlencode
+from six.moves.urllib.parse import urlencode
 from django.core.urlresolvers import reverse
 import hashlib
 

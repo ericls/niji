@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.test import TestCase, LiveServerTestCase
 from django.utils.translation import ugettext as _
 from selenium.webdriver.firefox.webdriver import WebDriver
