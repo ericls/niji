@@ -7,7 +7,7 @@ from django.views.generic import ListView
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from .models import Topic, User, Node, Post, Notification
-from .forms import TopicForm
+from .forms import TopicForm, TopicEditForm
 from .misc import get_query
 import re
 
@@ -126,6 +126,24 @@ def create_topic(request):
         form = TopicForm()
 
     return render(request, 'niji/create_topic.html', {'form': form, 'title': _('Create Topic')})
+
+
+@login_required
+def edit_topic(request, pk):
+    topic = Topic.objects.get(pk=pk)
+    if topic.reply_count > 0:
+        return HttpResponseForbidden(_('Editing is not allowed when topic has been replied'))
+    if not topic.user == request.user:
+        return HttpResponseForbidden(_('You are not allowed to edit other\'s topic'))
+    if request.method == 'POST':
+        form = TopicEditForm(request.POST, instance=topic)
+        if form.is_valid():
+            t = form.save()
+            return HttpResponseRedirect(reverse('niji:topic', kwargs={'pk': t.pk}))
+    else:
+        form = TopicEditForm(instance=topic)
+
+    return render(request, 'niji/edit_topic.html', {'form': form, 'title': _('Edit Topic')})
 
 
 @login_required

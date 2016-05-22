@@ -28,6 +28,13 @@
                 <p>{{ topic.content_rendered | safe}}</p>
             </div>
         </div>
+        {% if request.user == topic.user %}
+            <div class="panel-footer">
+                {% if topic.reply_count == 0 %}
+                    <a href="{% url 'niji:edit_topic' pk=topic.pk %}"><span class="label label-success">{% trans 'Edit' %}</span></a>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Replies</div>
@@ -56,9 +63,9 @@
                     </p>
                 </li>
             {% endfor %}
-        {% if not posts %}
-            <li class="list-group-item reply-item"><p>{% trans "Be the first to reply!" %}</p></li>
-        {% endif %}
+            {% if not posts %}
+                <li class="list-group-item reply-item"><p>{% trans "Be the first to reply!" %}</p></li>
+            {% endif %}
         </ul>
         <div class="panel-footer">
             {% get_pagination %}
@@ -69,7 +76,7 @@
         <div class="panel-body">
             {% if request.user.is_authenticated %}
                 <form action="{% url 'niji:reply' pk=topic.pk %}" method="POST">
-                {% csrf_token %}
+                    {% csrf_token %}
                     <div class="form-group">
                         <label for="reply-content-input" class="hidden">Content</label>
                         <textarea id="reply-content-input" name="content" class="form-control" rows="6"></textarea>
@@ -85,17 +92,17 @@
 {% endblock %}
 
 {% block widget_after %}
-{% include 'niji/widgets/node_info.html' %}
+    {% include 'niji/widgets/node_info.html' %}
 {% endblock %}
 
 {% block footer_ext %}
     <script>
-    $(document).ready(function(){
-        $('.reply-to').click(function(e){
-            e.preventDefault();
-            var box = $("#reply-content-input");
-            box.val(box.val() + "@"+$(this).data('username')+"\n");
+        $(document).ready(function(){
+            $('.reply-to').click(function(e){
+                e.preventDefault();
+                var box = $("#reply-content-input");
+                box.val(box.val() + "@"+$(this).data('username')+"\n");
+            });
         });
-    });
     </script>
 {% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'niji/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block left %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form method="post" action="{% url "niji:edit_topic" pk=form.instance.pk %}">
+                {% crispy form %}
+            </form>
+        </div>
+    </div>
+{% endblock %}
