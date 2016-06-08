@@ -2,8 +2,11 @@
 from django.db import models
 from django.db.models import F
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.utils.encoding import python_2_unicode_compatible
 from niji.tasks import notify
+from PIL import Image
+from io import BytesIO
 import xxhash
 import mistune
 import re
@@ -189,3 +192,34 @@ class NodeGroup(models.Model):
 
     def __str__(self):
         return self.title
+
+
+@python_2_unicode_compatible
+class ForumAvatar(models.Model):
+    user = models.OneToOneField('auth.User', related_name='forum_avatar')
+    use_gravatar = models.BooleanField(default=False)
+    image = models.ImageField(max_length=255,
+                              upload_to='uploads/forum/avatars/',
+                              blank=True,
+                              default="",
+                              null=True)
+
+    def save(self, *args, **kwargs):
+        existing_avatar = ForumAvatar.objects.filter(user=self.user).first()
+        if existing_avatar:
+            self.id = existing_avatar.id
+        if not self.image:
+            self.use_gravatar = True
+        else:
+            i = Image.open(self.image)
+            i.thumbnail((120, 120), Image.ANTIALIAS)
+            i_io = BytesIO()
+            i.save(i_io, format='PNG')
+            self.image = InMemoryUploadedFile(
+                i_io, None, '%s.png' % self.user_id, 'image/png', None, None
+            )
+        print(self.image)
+        super(ForumAvatar, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return "Avatar for user: %s" % self.user.username

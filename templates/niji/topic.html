@@ -15,7 +15,7 @@
             <h1 class="topic-title">{{ topic.title }}</h1>
             <div class="topic-meta row">
                 <div class="col-xs-2 col-sm-1">
-                    <img src="{% gravatar_url topic.user %}" alt=""/>
+                    <img class="user-avatar" src="{% avatar_url topic.user %}" alt=""/>
                 </div>
                 <div class="col-xs-9 col-sm-10">
                     <p class="text-muted">

@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^search/(?P<keyword>.*?)/$', views.SearchView.as_view(), name='search'),
     url(r'^t/create/$', views.create_topic, name='create_topic'),
     url(r'^notifications/$', views.NotificationView.as_view(), name='notifications'),
+    url(r'^avatar/$', views.upload_avatar, name="upload_avatar"),
 ]

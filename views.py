@@ -7,8 +7,8 @@ from django.contrib import messages
 from django.views.generic import ListView
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
-from .models import Topic, User, Node, Post, Notification
-from .forms import TopicForm, TopicEditForm, AppendixForm
+from .models import Topic, User, Node, Post, Notification, ForumAvatar
+from .forms import TopicForm, TopicEditForm, AppendixForm, ForumAvatarForm
 from .misc import get_query
 import re
 
@@ -176,6 +176,26 @@ def create_reply(request, pk):
         return HttpResponseRedirect(reverse('niji:topic', kwargs={'pk': pk}))
     if request.method == 'GET':
         return HttpResponseForbidden('Get you cannot')
+
+
+@login_required
+def upload_avatar(request):
+    avatar = ForumAvatar.objects.filter(user_id=request.user.id).first()
+    if request.method == 'POST':
+        if avatar:
+            form = ForumAvatarForm(request.POST, request.FILES, instance=avatar, user=request.user)
+        else:
+            form = ForumAvatarForm(request.POST, request.FILES, user=request.user)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('niji:index'))
+    else:
+        if avatar:
+            form = ForumAvatarForm(instance=request.user.forum_avatar)
+        else:
+            form = ForumAvatarForm()
+
+    return render(request, 'niji/upload_avatar.html', {'form': form, 'title': _('Upload Avatar')})
 
 
 @login_required

@@ -3,6 +3,7 @@ from django.utils.html import escape
 from django.contrib.auth.models import User
 from six.moves.urllib.parse import urlencode
 from django.core.urlresolvers import reverse
+from niji.models import ForumAvatar
 import hashlib
 
 register = template.Library()
@@ -23,6 +24,19 @@ def gravatar_url(user, size=48):
     avatar_url += urlencode({'d': default, 's': str(size)})
 
     return escape(avatar_url)
+
+
+@register.simple_tag
+def avatar_url(user, size=48, no_gravatar=False):
+    try:
+        avatar = user.forum_avatar
+    except ForumAvatar.DoesNotExist:
+        return gravatar_url(user, size)
+    else:
+        if avatar.use_gravatar and not no_gravatar or not avatar.image:
+            return gravatar_url(user, size)
+        else:
+            return avatar.image.url
 
 
 @register.simple_tag
