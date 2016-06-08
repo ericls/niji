@@ -1,0 +1,17 @@
+{% extends 'niji/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load niji_tags %}
+
+{% block left %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <h3>Change Avatar</h3>
+            <h4>Current Avatar</h4>
+            <img src="{% avatar_url request.user 120 True %}"/>
+            <form method="post" action="{% url "niji:upload_avatar" %}" enctype="multipart/form-data">
+                {% crispy form %}
+            </form>
+        </div>
+    </div>
+{% endblock %}

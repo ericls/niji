@@ -43,6 +43,11 @@ span.meta:before {
     border: none;
 }
 
+img.user-avatar {
+    width: 48px;
+    height: 48px;
+}
+
 /** User Panel **/
 .panel-username{
     margin-left: 1em;

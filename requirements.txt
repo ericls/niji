@@ -6,3 +6,4 @@ xxhash==0.4.3
 celery[redis]
 django-crispy-forms>=1.6.0
 six
+pillow

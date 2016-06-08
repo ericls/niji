@@ -17,7 +17,7 @@
                 <li class="list-group-item topic-entry">
                     <div class="entry row">
                         <div class="col-md-1 col-lg-1 col-xs-2 col-sm-1 entry-avatar">
-                            <a href="{% url 'niji:user_info' topic.user.pk %}"><img src="{% gravatar_url topic.user %}"></a>
+                            <a href="{% url 'niji:user_info' topic.user.pk %}"><img class="user-avatar" src="{% avatar_url topic.user %}"></a>
                         </div>
                         <div class="col-md-10 col-lg-10 col-xs-9">
                             <a href="{% url 'niji:topic' pk=topic.pk %}" class="entry-link">

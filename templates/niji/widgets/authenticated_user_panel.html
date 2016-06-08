@@ -5,7 +5,9 @@
     <div class="panel-body user-panel">
         <div class="panel-user-info">
             <div class="avatar-name">
-                <img class="panel-avatar" src="{% gravatar_url request.user %}" alt=""/>
+                <a href="{% url "niji:upload_avatar" %}">
+                    <img class="panel-avatar user-avatar" src="{% avatar_url request.user %}" alt=""/>
+                </a>
                 <span class="panel-username"><a href="{% url 'niji:user_info' request.user.pk %}">{{ request.user.username }}</a></span>
             </div>
             <div class="row panel-user-meta">
