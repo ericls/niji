@@ -53,7 +53,7 @@
             {% for reply in replies %}
                 <li class="list-group-item reply-entry reply-entry-title">
                     {% trans "Replied to" %}
-                    <a href="{% url 'niji:user_topics' pk=reply.topic.pk %}">{{ reply.topic.title }}</a>
+                    <a href="{% url 'niji:topic' pk=reply.topic.pk %}">{{ reply.topic.title }}</a>
                     <span class="pull-right">{{ reply.pub_date | naturaltime }}</span>
                 </li>
                 <li class="list-group-item reply-entry reply-entry-content">
