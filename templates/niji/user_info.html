@@ -7,7 +7,11 @@
     {% include 'niji/includes/user_info_panel.html' %}
     <div class="panel panel-default">
         <div class="panel-body panel-subtitle">
-            <span class="label label-success">{% trans "Topics" %}-{{ user.username }}</span>
+            <span class="label label-success">
+                {% blocktrans with username=user.username%}
+                    Topics created by {{ username }}
+                {% endblocktrans %}
+            </span>
         </div>
         <!-- List group -->
         <ul class="list-group topic-list">
@@ -46,7 +50,11 @@
 
     <div class="panel panel-default">
         <div class="panel-body panel-subtitle">
-            <span class="label label-success">{% trans "Replies" %}-{{ user.username }}</span>
+            <span class="label label-success">
+                {% blocktrans with username=user.username%}
+                    Replies from {{ username }}
+                {% endblocktrans %}
+            </span>
         </div>
         <!-- List group -->
         <ul class="list-group topic-list">

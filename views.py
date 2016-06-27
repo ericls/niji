@@ -249,7 +249,7 @@ def login_view(request):
                 messages.add_message(request, messages.INFO, _("User deactivated"))
         else:
             valid = False
-            messages.add_message(request, messages.INFO, _("Wrong password"))
+            messages.add_message(request, messages.INFO, _("Incorrect password"))
         if not valid:
             return HttpResponseRedirect(reverse("niji:login"))
 
@@ -271,7 +271,7 @@ def reg_view(request):
             messages.add_message(request, messages.INFO, _("Password does not match"))
         if not EMAIL_REGEX.match(email):
             valid = False
-            messages.add_message(request, messages.INFO, _("Email not valid"))
+            messages.add_message(request, messages.INFO, _("Invalid Email"))
         if not valid:
             return HttpResponseRedirect(reverse("niji:reg"))
         else:

@@ -14,24 +14,33 @@
                 <li class="list-group-item notification-entry">
                     <div class="row">
                         <div class="col-xs-1">
-                            <img src="{% gravatar_url notification.sender 28 %}">
+                            <img src="{% avatar_url notification.sender 28 %}">
                         </div>
                         <div class="col-xs-11">
                             <div class="notification-meta">
-                                <a href="{% url 'niji:user_info' notification.sender_id %}">
-                                    {{ notification.sender.username }}
-                                </a>
-                                {% trans "mentioned you" %}
+                                {% url 'niji:user_info' notification.sender_id as user_url %}
                                 {% if notification.topic %}
-                                    {% trans "in topic" %}
-                                    <a href="{% url 'niji:topic' notification.topic_id %}">
-                                        {{ notification.topic.title }}
-                                    </a>
+                                    {% url 'niji:topic' notification.topic_id as topic_url %}
+                                    {%blocktrans with username=notification.sender.username topic_title=notification.topic.title%}
+                                        <a href="{{ user_url }}">
+                                            {{ username }}
+                                        </a>
+                                        mentioned you in topic
+                                        <a href="{{ topic_url }}">
+                                            {{ topic_title }}
+                                        </a>
+                                    {% endblocktrans %}
                                 {% else %}
-                                    {% trans 'when replying to' %}
-                                    <a href="{% url 'niji:topic' notification.post.topic_id %}">
-                                        {{ notification.post.topic.title }}
-                                    </a>
+                                    {% url 'niji:topic' notification.post.topic_id as topic_url %}
+                                    {% blocktrans with username=notification.sender.username topic_title=notification.post.topic.title%}
+                                        <a href="{{ user_url }}">
+                                            {{ username }}
+                                        </a>
+                                        mentioned you when replying to
+                                        <a href="{{ topic_url }}">
+                                            {{ topic_title }}
+                                        </a>
+                                    {% endblocktrans %}
                                 {% endif %}
                             </div>
                             <div class="notification-content">
