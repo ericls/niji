@@ -51,9 +51,13 @@
             <a class="text-success" href="{% url 'niji:notifications' %}">
                 {% if unread_count %}
                     <span class="glyphicon glyphicon-gift" aria-hidden="true"></span>
-                    {{ unread_count }} {% trans 'unread notifications' %}
+                    {% blocktrans count unread_count=unread_count %}
+                        {{ unread_count }} new notification
+                        {% plural %}
+                        {{ unread_count }} new notifications
+                    {% endblocktrans %}
                 {% else %}
-                    <span class="text-muted">{% trans 'No unread nofitication' %}</span>
+                    <span class="text-muted">{% trans 'No new nofitications' %}</span>
                 {% endif %}
             </a>
         </li>
