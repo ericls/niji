@@ -1,14 +1,19 @@
 a:hover {
     text-decoration: none;
 }
-.panel-subtitle{
-}
 body {
     background: url("/static/image/bg.jpg");
 }
 
 
 /* topic entry list*/
+div.panel-subtitle > span.label {
+    color: #666;
+    background: none;
+    border-radius: 0;
+    border-left: solid 5px #5cb85c;
+}
+
 div.entry {
     margin: 0 1px;
 }
