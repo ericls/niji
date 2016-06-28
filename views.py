@@ -16,6 +16,7 @@ import re
 EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
 User = get_user_model()
 
+
 # Create your views here.
 class Index(ListView):
     model = Topic
@@ -24,7 +25,11 @@ class Index(ListView):
     context_object_name = 'topics'
 
     def get_queryset(self):
-        return Topic.objects.visible()
+        return Topic.objects.visible().select_related(
+            'user', 'node'
+        ).prefetch_related(
+            'user__forum_avatar'
+        )
 
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
@@ -40,7 +45,13 @@ class NodeView(ListView):
     context_object_name = 'topics'
 
     def get_queryset(self):
-        return Topic.objects.visible().filter(node__id=self.kwargs.get('pk'))
+        return Topic.objects.visible().filter(
+            node__id=self.kwargs.get('pk')
+        ).select_related(
+            'user', 'node'
+        ).prefetch_related(
+            'user__forum_avatar'
+        )
 
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
@@ -56,7 +67,13 @@ class TopicView(ListView):
     context_object_name = 'posts'
 
     def get_queryset(self):
-        return Post.objects.visible().filter(topic_id=self.kwargs.get('pk'))
+        return Post.objects.visible().filter(
+            topic_id=self.kwargs.get('pk')
+        ).select_related(
+            'user'
+        ).prefetch_related(
+            'user__forum_avatar'
+        )
 
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
@@ -73,8 +90,8 @@ def user_info(request, pk):
     return render(request, 'niji/user_info.html', {
         'title': u.username,
         'user': u,
-        'topics': u.topics.visible()[:10],
-        'replies': u.posts.visible().order_by('-pub_date')[:30],
+        'topics': u.topics.visible().select_related('node')[:10],
+        'replies': u.posts.visible().select_related('topic', 'user').order_by('-pub_date')[:30],
     })
 
 
@@ -85,7 +102,13 @@ class UserTopics(ListView):
     context_object_name = 'topics'
 
     def get_queryset(self):
-        return Topic.objects.visible().filter(user_id=self.kwargs.get('pk'))
+        return Topic.objects.visible().filter(
+            user_id=self.kwargs.get('pk')
+        ).select_related(
+            'user', 'node'
+        ).prefetch_related(
+            'user__forum_avatar'
+        )
 
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
@@ -103,7 +126,13 @@ class SearchView(ListView):
     def get_queryset(self):
         keywords = self.kwargs.get('keyword')
         query = get_query(keywords, ['title'])
-        return Topic.objects.visible().filter(query)
+        return Topic.objects.visible().filter(
+            query
+        ).select_related(
+            'user', 'node'
+        ).prefetch_related(
+            'user__forum_avatar'
+        )
 
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
@@ -218,7 +247,13 @@ class NotificationView(ListView):
 
     def get_queryset(self):
         Notification.objects.filter(to=self.request.user).update(read=True)
-        return Notification.objects.filter(to=self.request.user).order_by('-pub_date')
+        return Notification.objects.filter(
+            to=self.request.user
+        ).select_related(
+            'sender', 'topic', 'post'
+        ).prefetch_related(
+            'sender__forum_avatar', 'post__topic'
+        ).order_by('-pub_date')
 
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
