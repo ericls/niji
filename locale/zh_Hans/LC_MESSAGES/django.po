@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-28 12:06-0400\n"
+"POT-Creation-Date: 2016-06-28 12:55-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: forms.py:15 forms.py:40 forms.py:56 forms.py:80 templates/niji/login.html:23
-#: templates/niji/reg.html.py:31
+#: templates/niji/reg.html.py:31 templates/niji/topic.html:105
 msgid "Submit"
 msgstr "提交"
 
@@ -108,6 +108,7 @@ msgstr ""
 "                                            %(topic_title)s\n"
 "                                        </a>\n"
 "                                    时@了你"
+
 #: templates/niji/reg.html:20
 msgid "Email"
 msgstr "Email"
@@ -134,15 +135,33 @@ msgstr "编辑"
 msgid "Append"
 msgstr "添加附言"
 
-#: templates/niji/topic.html:76
+#: templates/niji/topic.html:56
+#, python-format
+msgid "%(reply_count)s Reply"
+msgid_plural "%(reply_count)s Replies"
+msgstr[0] "%(reply_count)s条回复"
+
+#: templates/niji/topic.html:58
+msgid "No Replies"
+msgstr "暂无回复"
+
+#: templates/niji/topic.html:82
 msgid "Reply"
 msgstr "回复"
 
-#: templates/niji/topic.html:81
+#: templates/niji/topic.html:87
 msgid "Be the first to reply!"
 msgstr "暂无回复"
 
-#: templates/niji/topic.html:105
+#: templates/niji/topic.html:95
+msgid "Leave a Reply"
+msgstr "添加回复"
+
+#: templates/niji/topic.html:103
+msgid "Markdown enabled"
+msgstr "可使用 Markdown"
+
+#: templates/niji/topic.html:111
 #, python-format
 msgid ""
 "\n"
