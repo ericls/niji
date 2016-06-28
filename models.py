@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.db.models import F
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.utils.encoding import python_2_unicode_compatible
 from niji.tasks import notify
@@ -18,6 +19,7 @@ if six.PY2:
 
 
 MENTION_REGEX = re.compile(r'@(\S+)', re.M)
+USER_MODEL = settings.AUTH_USER_MODEL
 
 
 def render_content(content_raw, sender):
@@ -30,7 +32,7 @@ def render_content(content_raw, sender):
     content_rendered = mistune.markdown(content_raw)
     mentioned = list(set(re.findall(MENTION_REGEX, content_raw)))
     mentioned = [x for x in mentioned if x != sender]
-    mentioned_users = User.objects.filter(username__in=mentioned)
+    mentioned_users = get_user_model().objects.filter(username__in=mentioned)
     return content_rendered, mentioned_users
 
 
@@ -42,7 +44,7 @@ class TopicQueryset(models.QuerySet):
 
 @python_2_unicode_compatible
 class Topic(models.Model):
-    user = models.ForeignKey(User, related_name='topics')
+    user = models.ForeignKey(USER_MODEL, related_name='topics')
     title = models.CharField(max_length=120)
     content_raw = models.TextField()
     content_rendered = models.TextField(default='', blank=True)
@@ -102,7 +104,7 @@ class PostQueryset(models.QuerySet):
 @python_2_unicode_compatible
 class Post(models.Model):
     topic = models.ForeignKey('Topic', related_name='replies')
-    user = models.ForeignKey(User, related_name='posts')
+    user = models.ForeignKey(USER_MODEL, related_name='posts')
     content_raw = models.TextField()
     content_rendered = models.TextField(default='')
     pub_date = models.DateTimeField(auto_now_add=True)
@@ -141,8 +143,8 @@ class Post(models.Model):
 
 @python_2_unicode_compatible
 class Notification(models.Model):
-    sender = models.ForeignKey(User, related_name='sent_notifications')
-    to = models.ForeignKey(User, related_name='received_notifications')
+    sender = models.ForeignKey(USER_MODEL, related_name='sent_notifications')
+    to = models.ForeignKey(USER_MODEL, related_name='received_notifications')
     topic = models.ForeignKey('Topic', null=True)
     post = models.ForeignKey('Post', null=True)
     read = models.BooleanField(default=False)
@@ -196,7 +198,7 @@ class NodeGroup(models.Model):
 
 @python_2_unicode_compatible
 class ForumAvatar(models.Model):
-    user = models.OneToOneField('auth.User', related_name='forum_avatar')
+    user = models.OneToOneField(USER_MODEL, related_name='forum_avatar')
     use_gravatar = models.BooleanField(default=False)
     image = models.ImageField(max_length=255,
                               upload_to='uploads/forum/avatars/',
