@@ -17,8 +17,8 @@
         <ul class="list-group topic-list">
             {% for topic in topics %}
                 <li class="list-group-item topic-entry">
-                    <div class="entry row">
-                        <div class="col-md-10 col-lg-10 col-xs-9">
+                    <div class="entry media">
+                        <div class="media-body media-middle">
                             <a href="{% url 'niji:topic' pk=topic.pk %}" class="entry-link">
                                 {{ topic.title }}
                             </a>
@@ -36,14 +36,14 @@
                                     </span>
                             </p>
                         </div>
-                        <div class="col-xs-1 entry-reply-count hidden-xs">
+                        <div class="media-right media-middle">
                             <span class="badge">{{ topic.reply_count }}</span>
                         </div>
                     </div>
                 </li>
             {% endfor %}
             <li class="list-group-item">
-                <a href="{% url 'niji:user_topics' user.pk %}" class="text-muted">{% trans "More topics from this user" %}</a>
+                <a href="{% url 'niji:user_topics' user.pk %}" class="text-success">{% trans "More topics from this user" %}</a>
             </li>
         </ul>
     </div>
