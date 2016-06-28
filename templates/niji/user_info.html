@@ -28,11 +28,6 @@
                                         {{ topic.node.title }}
                                         </span>
                                 </a>
-                                    <span class="meta meta-username">
-                                        <a href="{% url 'niji:user_info' topic.user.pk %}">
-                                            {{ topic.user.username }}
-                                        </a>
-                                    </span>
                                     <span class="meta meta-pub_date">
                                         {{ topic.pub_date | naturaltime }}
                                     </span>
