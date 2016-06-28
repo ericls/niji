@@ -4,16 +4,17 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.views.generic import ListView
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
-from .models import Topic, User, Node, Post, Notification, ForumAvatar
+from .models import Topic, Node, Post, Notification, ForumAvatar
 from .forms import TopicForm, TopicEditForm, AppendixForm, ForumAvatarForm
 from .misc import get_query
 import re
 
 EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
-
+User = get_user_model()
 
 # Create your views here.
 class Index(ListView):
