@@ -1,0 +1,297 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-06-28 12:06-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: forms.py:15 forms.py:40 forms.py:56 forms.py:80 templates/niji/login.html:23
+#: templates/niji/reg.html.py:31
+msgid "Submit"
+msgstr "提交"
+
+#: forms.py:21 forms.py:46 forms.py:62
+msgid "Content"
+msgstr "内容"
+
+#: forms.py:22
+msgid "Node"
+msgstr "节点"
+
+#: forms.py:23
+msgid "Title"
+msgstr "标题"
+
+#: forms.py:86
+msgid "Avatar Image"
+msgstr "头像图片"
+
+#: forms.py:87
+msgid "Always Use Gravatar"
+msgstr "始终使用 Gravatar"
+
+#: templates/niji/base.html:35 templates/niji/base.html.py:37
+msgid "Search"
+msgstr "搜索"
+
+#: templates/niji/includes/list.html:39 templates/niji/user_info.html.py:35
+msgid "Last Replied"
+msgstr "最后回复"
+
+#: templates/niji/login.html:16 templates/niji/reg.html.py:16
+msgid "Username"
+msgstr "用户名"
+
+#: templates/niji/login.html:20 templates/niji/reg.html.py:24
+msgid "Password"
+msgstr "密码"
+
+#: templates/niji/notifications.html:9 views.py:207 views.py:225
+msgid "Notifications"
+msgstr "提醒"
+
+#: templates/niji/notifications.html:24
+#, python-format
+msgid ""
+"\n"
+"                                        <a href=\"%(user_url)s\">\n"
+"                                            %(username)s\n"
+"                                        </a>\n"
+"                                        mentioned you in topic\n"
+"                                        <a href=\"%(topic_url)s\">\n"
+"                                            %(topic_title)s\n"
+"                                        </a>\n"
+"                                    "
+msgstr ""
+"\n"
+"                                        用户<a href=\"%(user_url)s\">\n"
+"                                            %(username)s\n"
+"                                        </a>\n"
+"                                        在主题\n"
+"                                        <a href=\"%(topic_url)s\">\n"
+"                                            %(topic_title)s\n"
+"                                        </a>\n"
+"                                    中@了你"
+
+#: templates/niji/notifications.html:35
+#, python-format
+msgid ""
+"\n"
+"                                        <a href=\"%(user_url)s\">\n"
+"                                            %(username)s\n"
+"                                        </a>\n"
+"                                        mentioned you when replying to\n"
+"                                        <a href=\"%(topic_url)s\">\n"
+"                                            %(topic_title)s\n"
+"                                        </a>\n"
+"                                    "
+msgstr ""
+"\n"
+"                                        用户<a href=\"%(user_url)s\">\n"
+"                                            %(username)s\n"
+"                                        </a>\n"
+"                                        在回复主题\n"
+"                                        <a href=\"%(topic_url)s\">\n"
+"                                            %(topic_title)s\n"
+"                                        </a>\n"
+"                                    时@了你"
+#: templates/niji/reg.html:20
+msgid "Email"
+msgstr "Email"
+
+#: templates/niji/reg.html:28
+msgid "Repeat Password"
+msgstr "重复密码"
+
+#: templates/niji/topic.html:24
+#, python-format
+msgid "viewed %(view_count)s times"
+msgstr "%(view_count)s次浏览"
+
+#: templates/niji/topic.html:37
+#, python-format
+msgid "appendix %(number)s"
+msgstr "第%(number)s条附言"
+
+#: templates/niji/topic.html:47
+msgid "Edit"
+msgstr "编辑"
+
+#: templates/niji/topic.html:49
+msgid "Append"
+msgstr "添加附言"
+
+#: templates/niji/topic.html:76
+msgid "Reply"
+msgstr "回复"
+
+#: templates/niji/topic.html:81
+msgid "Be the first to reply!"
+msgstr "暂无回复"
+
+#: templates/niji/topic.html:105
+#, python-format
+msgid ""
+"\n"
+"                    Please <a href=\"%(login_url)s\">Login</a> or <a href="
+"\"%(reg_url)s\">Create a New User</a> to reply\n"
+"                "
+msgstr ""
+"\n"
+"                    请先<a href=\"%(login_url)s\">登录</a> 或 <a href="
+"\"%(reg_url)s\">注册</a>\n"
+"                "
+
+#: templates/niji/user_info.html:11
+#, python-format
+msgid ""
+"\n"
+"                    Topics created by %(username)s\n"
+"                "
+msgstr ""
+"\n"
+"                    %(username)s创建的主题\n"
+"                "
+
+#: templates/niji/user_info.html:46
+msgid "More topics from this user"
+msgstr "该用户的更多主题"
+
+#: templates/niji/user_info.html:54
+#, python-format
+msgid ""
+"\n"
+"                    Replies from %(username)s\n"
+"                "
+msgstr ""
+"\n"
+"                    %(username)s发表的回复\n"
+"                "
+
+#: templates/niji/user_info.html:63
+msgid "Replied to"
+msgstr "回复"
+
+#: templates/niji/widgets/authenticated_user_panel.html:47 views.py:132
+msgid "Create Topic"
+msgstr "创建主题"
+
+#: templates/niji/widgets/authenticated_user_panel.html:54
+#, python-format
+msgid ""
+"\n"
+"                        %(unread_count)s new notification\n"
+"                        "
+msgid_plural ""
+"\n"
+"                        %(unread_count)s new notifications\n"
+"                    "
+msgstr[0] ""
+"\n"
+"                        %(unread_count)s条未读提醒\n"
+"                        "
+msgstr[1] ""
+"\n"
+"                        %(unread_count)s条未读提醒\n"
+"                    "
+
+#: templates/niji/widgets/authenticated_user_panel.html:60
+msgid "No new nofitications"
+msgstr "暂无未读提醒"
+
+#: templates/niji/widgets/authenticated_user_panel.html:67
+msgid "Log out"
+msgstr "登出"
+
+#: templates/niji/widgets/nodes.html:3
+msgid "Nodes"
+msgstr "节点"
+
+#: templates/niji/widgets/visitor_user_panel.html:9
+msgid "Log in"
+msgstr "登入"
+
+#: templates/niji/widgets/visitor_user_panel.html:12 views.py:260
+msgid "Reg"
+msgstr "注册"
+
+#: views.py:31
+msgid "New Topics"
+msgstr "最新主题"
+
+#: views.py:32
+msgid "Index"
+msgstr "首页"
+
+#: views.py:110
+msgid "Search: "
+msgstr "搜索: "
+
+#: views.py:139
+msgid "Editing is not allowed when topic has been replied"
+msgstr "主题被回复后不可编辑"
+
+#: views.py:141
+msgid "You are not allowed to edit other's topic"
+msgstr "你不能编辑他人的主题"
+
+#: views.py:150
+msgid "Edit Topic"
+msgstr "编辑主题"
+
+#: views.py:157
+msgid "You are not allowed to append other's topic"
+msgstr "你不能给他人的主题添加附言"
+
+#: views.py:167
+msgid "Create Appendix"
+msgstr "添加附言"
+
+#: views.py:199
+msgid "Upload Avatar"
+msgstr "上传头像"
+
+#: views.py:231
+msgid "Login"
+msgstr "登入"
+
+#: views.py:238
+msgid "Username and password cannot be empty"
+msgstr "用户名和密码不能为空"
+
+#: views.py:242
+msgid "User does not exist"
+msgstr "该用户不存在"
+
+#: views.py:250
+msgid "User deactivated"
+msgstr "该用户被禁用"
+
+#: views.py:253
+msgid "Incorrect password"
+msgstr "密码错误"
+
+#: views.py:269
+msgid "User already exists"
+msgstr "用户已存在"
+
+#: views.py:272
+msgid "Password does not match"
+msgstr "两次密码不匹配"
+
+#: views.py:275
+msgid "Invalid Email"
+msgstr "邮箱格式不正确"
