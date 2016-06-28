@@ -13,11 +13,11 @@
         <ul class="list-group topic-list">
             {% for topic in topics %}
                 <li class="list-group-item topic-entry">
-                    <div class="entry row">
-                        <div class="col-md-1 col-lg-1 col-xs-2 col-sm-1 entry-avatar">
-                            <a href="{% url 'niji:user_info' topic.user.pk %}"><img class="user-avatar" src="{% avatar_url topic.user %}"></a>
+                    <div class="entry media">
+                        <div class="media-left media-middle">
+                            <a class="list-avatar-link" href="{% url 'niji:user_info' topic.user.pk %}"><img class="user-avatar" src="{% avatar_url topic.user %}"></a>
                         </div>
-                        <div class="col-md-10 col-lg-10 col-xs-9">
+                        <div class="media-body media-middle">
                             <a href="{% url 'niji:topic' pk=topic.pk %}" class="entry-link">
                                 {{ topic.title }}
                             </a>
@@ -40,7 +40,7 @@
                                     </span>
                             </p>
                         </div>
-                        <div class="col-xs-1 entry-reply-count hidden-xs">
+                        <div class="media-right media-middle">
                             <span class="badge">{{ topic.reply_count }}</span>
                         </div>
                     </div>

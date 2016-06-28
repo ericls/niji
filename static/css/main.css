@@ -15,7 +15,12 @@ div.panel-subtitle > span.label {
 }
 
 div.entry {
-    margin: 0 1px;
+    padding: 0 10px;
+}
+
+p.entry-meta {
+    font-size: 0.8em;
+    margin: 0;
 }
 
 li.topic-entry {
