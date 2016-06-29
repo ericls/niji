@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase, LiveServerTestCase
 from django.utils.translation import ugettext as _
-from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.chrome.webdriver import WebDriver
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from .models import Topic, Node, Post, Notification, Appendix
@@ -251,7 +251,7 @@ class VisitorTest(LiveServerTestCase):
                 Topic.objects.create(
                     title='Test Topic %s' % i,
                     user=self.u1,
-                    content_raw='This is test _topic __%s__' % i,
+                    content_raw='This is test topic __%s__' % i,
                     node=self.n1
                 )
             )
@@ -261,14 +261,13 @@ class VisitorTest(LiveServerTestCase):
 
     def test_index(self):
         self.browser.get(self.live_server_url+reverse('niji:index'))
-        body = self.browser.find_element_by_tag_name('body')
-        self.assertIn('niji', body)
+        self.assertIn('niji', self.browser.page_source.lower())
 
-    def test_topic_page(self):
-        pass
+    def test_topic_page_content(self):
+        self.browser.get(self.live_server_url+reverse('niji:topic', kwargs={'pk': self.t88.pk}))
+        self.assertIn('This is test topic <strong>88</strong>', self.browser.page_source)
 
     def test_node_page(self):
-        pass
-
-    def test_pagination(self):
-        pass
+        self.browser.get(self.live_server_url+reverse('niji:node', kwargs={'pk': self.n1.pk}))
+        topics = self.browser.find_elements_by_css_selector('ul.topic-list > li')
+        self.assertEqual(len(topics), 30)
