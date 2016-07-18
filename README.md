@@ -1,7 +1,8 @@
 #NIJI
 
 > NIJI is a forum APP for Django projects.
-> NIJI can be integrated into existing Django projects.
+>
+> NIJI is developed with the idea that it should be easily integreated into existing Django projects
 
 ## Quick Installation (Integration)
 
@@ -100,3 +101,17 @@ PAGEDOWN_WIDGET_TEMPLATE = 'niji/widgets/pagedown.html'
 ```
 NIJI_SITE_NAME = "xxx"  # This will add "-xxx" to html title
 ```
+
+### Run without starting a celery worker
+
+Add the following to your settings
+
+```
+CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
+CELERY_ALWAYS_EAGER = True
+BROKER_BACKEND = 'memory'
+```
+
+With these settings present, you don't need to run a seperate celery worker.
+
+And the tasks will be executed in a synchronous manner.
