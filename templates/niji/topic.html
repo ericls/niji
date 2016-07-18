@@ -121,7 +121,7 @@
         $(document).ready(function(){
             $('.reply-to').click(function(e){
                 e.preventDefault();
-                var box = $("#reply-content-input");
+                var box = $("#reply-content-input, #id_content_raw");
                 box.val(box.val() + "@"+$(this).data('username')+"\n");
             });
         });
