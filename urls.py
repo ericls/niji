@@ -11,7 +11,6 @@ urlpatterns = [
     url(r'^t/(?P<pk>\d+)/append/$', views.create_appendix, name='create_appendix'),
     url(r'^t/(?P<pk>\d+)/page/(?P<page>[0-9]+)/$', views.TopicView.as_view(), name='topic'),
     url(r'^t/(?P<pk>\d+)/$', views.TopicView.as_view(), name='topic'),
-    url(r'^t/(?P<pk>\d+)/reply', views.create_reply, name='reply'),
     url(r'^u/(?P<pk>\d+)/$', views.user_info, name='user_info'),
     url(r'^u/(?P<pk>\d+)/topics/page/(?P<page>[0-9]+)/$', views.UserTopics.as_view(), name='user_topics'),
     url(r'^u/(?P<pk>\d+)/topics/$', views.UserTopics.as_view(), name='user_topics'),

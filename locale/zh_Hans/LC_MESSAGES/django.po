@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-28 12:55-0400\n"
+"POT-Creation-Date: 2016-07-18 03:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,48 +18,48 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: forms.py:15 forms.py:40 forms.py:56 forms.py:80 templates/niji/login.html:23
-#: templates/niji/reg.html.py:31 templates/niji/topic.html:105
-msgid "Submit"
-msgstr "提交"
-
-#: forms.py:21 forms.py:46 forms.py:62
+#: forms.py:20 forms.py:32 forms.py:49 forms.py:60 forms.py:76
 msgid "Content"
 msgstr "内容"
 
-#: forms.py:22
+#: forms.py:26 forms.py:54 forms.py:70 forms.py:94 forms.py:123
+#: templates/niji/login.html:23 templates/niji/reg.html:31
+msgid "Submit"
+msgstr "提交"
+
+#: forms.py:33
 msgid "Node"
 msgstr "节点"
 
-#: forms.py:23
+#: forms.py:34
 msgid "Title"
 msgstr "标题"
 
-#: forms.py:86
+#: forms.py:100
 msgid "Avatar Image"
 msgstr "头像图片"
 
-#: forms.py:87
+#: forms.py:101
 msgid "Always Use Gravatar"
 msgstr "始终使用 Gravatar"
 
-#: templates/niji/base.html:35 templates/niji/base.html.py:37
+#: templates/niji/base.html:36 templates/niji/base.html:38
 msgid "Search"
 msgstr "搜索"
 
-#: templates/niji/includes/list.html:39 templates/niji/user_info.html.py:35
+#: templates/niji/includes/list.html:39 templates/niji/user_info.html:35
 msgid "Last Replied"
 msgstr "最后回复"
 
-#: templates/niji/login.html:16 templates/niji/reg.html.py:16
+#: templates/niji/login.html:16 templates/niji/reg.html:16
 msgid "Username"
 msgstr "用户名"
 
-#: templates/niji/login.html:20 templates/niji/reg.html.py:24
+#: templates/niji/login.html:20 templates/niji/reg.html:24
 msgid "Password"
 msgstr "密码"
 
-#: templates/niji/notifications.html:9 views.py:207 views.py:225
+#: templates/niji/notifications.html:9 views.py:252 views.py:276
 msgid "Notifications"
 msgstr "提醒"
 
@@ -117,51 +117,47 @@ msgstr "Email"
 msgid "Repeat Password"
 msgstr "重复密码"
 
-#: templates/niji/topic.html:24
+#: templates/niji/topic.html:25
 #, python-format
 msgid "viewed %(view_count)s times"
 msgstr "%(view_count)s次浏览"
 
-#: templates/niji/topic.html:37
+#: templates/niji/topic.html:38
 #, python-format
 msgid "appendix %(number)s"
 msgstr "第%(number)s条附言"
 
-#: templates/niji/topic.html:47
+#: templates/niji/topic.html:48
 msgid "Edit"
 msgstr "编辑"
 
-#: templates/niji/topic.html:49
+#: templates/niji/topic.html:50
 msgid "Append"
 msgstr "添加附言"
 
-#: templates/niji/topic.html:56
+#: templates/niji/topic.html:57
 #, python-format
 msgid "%(reply_count)s Reply"
 msgid_plural "%(reply_count)s Replies"
 msgstr[0] "%(reply_count)s条回复"
 
-#: templates/niji/topic.html:58
+#: templates/niji/topic.html:59
 msgid "No Replies"
 msgstr "暂无回复"
 
-#: templates/niji/topic.html:82
+#: templates/niji/topic.html:83
 msgid "Reply"
 msgstr "回复"
 
-#: templates/niji/topic.html:87
+#: templates/niji/topic.html:88
 msgid "Be the first to reply!"
 msgstr "暂无回复"
 
-#: templates/niji/topic.html:95
+#: templates/niji/topic.html:96
 msgid "Leave a Reply"
 msgstr "添加回复"
 
-#: templates/niji/topic.html:103
-msgid "Markdown enabled"
-msgstr "可使用 Markdown"
-
-#: templates/niji/topic.html:111
+#: templates/niji/topic.html:106
 #, python-format
 msgid ""
 "\n"
@@ -204,7 +200,7 @@ msgstr ""
 msgid "Replied to"
 msgstr "回复"
 
-#: templates/niji/widgets/authenticated_user_panel.html:47 views.py:132
+#: templates/niji/widgets/authenticated_user_panel.html:47 views.py:177
 msgid "Create Topic"
 msgstr "创建主题"
 
@@ -239,78 +235,85 @@ msgstr "登出"
 msgid "Nodes"
 msgstr "节点"
 
+#: templates/niji/widgets/pagedown.html:9
+msgid "Preview"
+msgstr "预览"
+
 #: templates/niji/widgets/visitor_user_panel.html:9
 msgid "Log in"
 msgstr "登入"
 
-#: templates/niji/widgets/visitor_user_panel.html:12 views.py:260
+#: templates/niji/widgets/visitor_user_panel.html:12 views.py:311
 msgid "Reg"
 msgstr "注册"
 
-#: views.py:31
+#: views.py:37
 msgid "New Topics"
 msgstr "最新主题"
 
-#: views.py:32
+#: views.py:38
 msgid "Index"
 msgstr "首页"
 
-#: views.py:110
+#: views.py:155
 msgid "Search: "
 msgstr "搜索: "
 
-#: views.py:139
+#: views.py:184
 msgid "Editing is not allowed when topic has been replied"
 msgstr "主题被回复后不可编辑"
 
-#: views.py:141
+#: views.py:186
 msgid "You are not allowed to edit other's topic"
 msgstr "你不能编辑他人的主题"
 
-#: views.py:150
+#: views.py:195
 msgid "Edit Topic"
 msgstr "编辑主题"
 
-#: views.py:157
+#: views.py:202
 msgid "You are not allowed to append other's topic"
 msgstr "你不能给他人的主题添加附言"
 
-#: views.py:167
+#: views.py:212
 msgid "Create Appendix"
 msgstr "添加附言"
 
-#: views.py:199
+#: views.py:244
 msgid "Upload Avatar"
 msgstr "上传头像"
 
-#: views.py:231
+#: views.py:282
 msgid "Login"
 msgstr "登入"
 
-#: views.py:238
+#: views.py:289
 msgid "Username and password cannot be empty"
 msgstr "用户名和密码不能为空"
 
-#: views.py:242
+#: views.py:293
 msgid "User does not exist"
 msgstr "该用户不存在"
 
-#: views.py:250
+#: views.py:301
 msgid "User deactivated"
 msgstr "该用户被禁用"
 
-#: views.py:253
+#: views.py:304
 msgid "Incorrect password"
 msgstr "密码错误"
 
-#: views.py:269
+#: views.py:320
 msgid "User already exists"
 msgstr "用户已存在"
 
-#: views.py:272
+#: views.py:323
 msgid "Password does not match"
 msgstr "两次密码不匹配"
 
-#: views.py:275
+#: views.py:326
 msgid "Invalid Email"
 msgstr "邮箱格式不正确"
+
+#~ msgid "Markdown enabled"
+#~ msgstr "可使用 Markdown"

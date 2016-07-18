@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load niji_tags %}
 {% load humanize %}
+{% load crispy_forms_tags %}
 
 {% block left %}
     <div class="panel panel-default">
@@ -95,14 +96,8 @@
         <div class="panel-heading">{% trans "Leave a Reply"%}</div>
         <div class="panel-body">
             {% if request.user.is_authenticated %}
-                <form action="{% url 'niji:reply' pk=topic.pk %}" method="POST">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="reply-content-input" class="hidden">Content</label>
-                        <textarea id="reply-content-input" name="content" class="form-control" rows="6"></textarea>
-                        <p class="help-block">{% trans "Markdown enabled" %}</p>
-                    </div>
-                    <button type="submit" class="btn btn-default">{% trans 'Submit' %}</button>
+                <form action="{% url 'niji:topic' pk=topic.pk %}" method="POST">
+                    {% crispy form %}
                 </form>
             {% else %}
                 <div class="alert alert-warning" role="alert">

@@ -7,9 +7,10 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.views.generic import ListView
 from django.utils.translation import ugettext as _
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from .models import Topic, Node, Post, Notification, ForumAvatar
-from .forms import TopicForm, TopicEditForm, AppendixForm, ForumAvatarForm
+from .forms import TopicForm, TopicEditForm, AppendixForm, ForumAvatarForm, ReplyForm
 from .misc import get_query
 import re
 
@@ -82,7 +83,22 @@ class TopicView(ListView):
         context['topic'] = current
         context['title'] = context['topic'].title
         context['node'] = context['topic'].node
+        context['form'] = ReplyForm()
         return context
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        topic_id=self.kwargs.get('pk')
+        form = ReplyForm(
+            request.POST,
+            user=request.user,
+            topic_id=topic_id
+        )
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(
+                reverse('niji:topic', kwargs={'pk': topic_id})
+            )
 
 
 def user_info(request, pk):
@@ -195,17 +211,6 @@ def create_appendix(request, pk):
     return render(request, 'niji/create_appendix.html', {
         'form': form, 'title': _('Create Appendix'), 'pk': pk
     })
-
-
-@login_required
-def create_reply(request, pk):
-    if request.method == 'POST':
-        content = request.POST.get('content', '')
-        if content:
-            Post.objects.create(topic_id=pk, content_raw=content, user=request.user)
-        return HttpResponseRedirect(reverse('niji:topic', kwargs={'pk': pk}))
-    if request.method == 'GET':
-        return HttpResponseForbidden('Get you cannot')
 
 
 @login_required
