@@ -80,3 +80,23 @@ from .celery import app as celery_app
 ```
 celery -A project_name worker -l INFO
 ```
+
+## Other Settings
+
+### Use markdown editor with preview (django-pagedown)
+
+Django-pagedown editor is automatically enabled if you have `pagedown` in your `INSTALLED_APPS`
+
+In order not to break the layout and add an i18n tweak to the text "Preview", you'll need to include the following settings:
+
+```
+# Pagedown Editor
+PAGEDOWN_WIDGET_CSS = ('pagedown/demo/browser/demo.css', "css/editor.css",)
+PAGEDOWN_WIDGET_TEMPLATE = 'niji/widgets/pagedown.html'
+```
+
+### Show site name in html title
+
+```
+NIJI_SITE_NAME = "xxx"  # This will add "-xxx" to html title
+```
