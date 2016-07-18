@@ -74,7 +74,7 @@ class TopicView(ListView):
             'user'
         ).prefetch_related(
             'user__forum_avatar'
-        )
+        ).order_by('pub_date')
 
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
