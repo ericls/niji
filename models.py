@@ -4,7 +4,9 @@ from django.db.models import F
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.urlresolvers import reverse
 from django.utils.encoding import python_2_unicode_compatible
+from functools import partial
 from niji.tasks import notify
 from PIL import Image
 from io import BytesIO
@@ -22,6 +24,14 @@ MENTION_REGEX = re.compile(r'@(\S+)', re.M)
 USER_MODEL = settings.AUTH_USER_MODEL
 
 
+def _replace_username(link, matchobj):
+    return "@<a href={link}>{username}</a>{whitespace}".format(
+        username=matchobj.group("username")[1:],
+        whitespace=matchobj.group("whitespace"),
+        link=link
+    )
+
+
 def render_content(content_raw, sender):
     """
     :param content_raw: Raw content
@@ -33,6 +43,13 @@ def render_content(content_raw, sender):
     mentioned = list(set(re.findall(MENTION_REGEX, content_raw)))
     mentioned = [x for x in mentioned if x != sender]
     mentioned_users = get_user_model().objects.filter(username__in=mentioned)
+    for user in mentioned_users:
+        content_rendered = re.sub(
+            r'(?P<username>@%s)(?P<whitespace>\s|<\/p>)' % user.username,
+            partial(_replace_username, reverse('niji:user_info', kwargs={"pk": user.pk})),
+            content_rendered,
+            re.M
+        )
     return content_rendered, mentioned_users
 
 

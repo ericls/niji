@@ -115,3 +115,25 @@ BROKER_BACKEND = 'memory'
 With these settings present, you don't need to run a seperate celery worker.
 
 And the tasks will be executed in a synchronous manner.
+
+## Management Commands
+
+### Re-render
+```
+Re-render topics and posts
+usage: manage.py rerender [-h] [--version] [-v {0,1,2,3}]
+                          [--settings SETTINGS] [--pythonpath PYTHONPATH]
+                          [--traceback] [--no-color] [--all]
+                          [--topics TOPICS [TOPICS ...]]
+                          [--posts POSTS [POSTS ...]]
+
+```
+#### Examples
+```
+python manage.py rerender --topics 1 2 3
+# rerenders topics whose pks are in [1, 2, 3]
+python manage.py rerender --posts 1 2 3
+# rerenders posts whose pks are in [1, 2, 3]
+python manage.py rerender --all
+# rerenders all topics and posts
+```
