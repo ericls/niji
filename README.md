@@ -1,5 +1,7 @@
 #NIJI
 
+[![Build Status](https://travis-ci.org/ericls/niji.svg?branch=master)](https://travis-ci.org/ericls/niji)
+
 > NIJI is a forum APP for Django projects.
 >
 > NIJI is developed with the idea that it should be easily integreated into existing Django projects
