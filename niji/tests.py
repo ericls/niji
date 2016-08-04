@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase, LiveServerTestCase
 from django.utils.translation import ugettext as _
-from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.firefox.webdriver import WebDriver
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from .models import Topic, Node, Post, Notification, Appendix
