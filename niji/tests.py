@@ -3,10 +3,24 @@ from django.test import TestCase, LiveServerTestCase
 from django.utils.translation import ugettext as _
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from .models import Topic, Node, Post, Notification, Appendix
 from django.test.utils import override_settings
+import random
+
+
+def login(browser, username_text, password_text):
+    login_btn = browser.find_element_by_xpath(
+        "//*[@id=\"main\"]/div/div[2]/div[1]/div[2]/div/div[1]/a"
+    )
+    login_btn.click()
+    username = browser.find_element_by_name('username')
+    password = browser.find_element_by_name('password')
+    username.send_keys(username_text)
+    password.send_keys(password_text)
+    password.send_keys(Keys.RETURN)
 
 
 class TopicModelTest(TestCase):
@@ -280,15 +294,7 @@ class VisitorTest(LiveServerTestCase):
     def test_user_login(self):
         self.browser.get(self.live_server_url+reverse('niji:index'))
         self.assertNotIn("Log out", self.browser.page_source)
-        login_btn = self.browser.find_element_by_xpath(
-            "//*[@id=\"main\"]/div/div[2]/div[1]/div[2]/div/div[1]/a"
-        )
-        login_btn.click()
-        username = self.browser.find_element_by_name('username')
-        password = self.browser.find_element_by_name('password')
-        username.send_keys("test1")
-        password.send_keys("111")
-        password.send_keys(Keys.RETURN)
+        login(self.browser, "test1", "111")
         self.assertEqual(self.browser.current_url, self.live_server_url+reverse("niji:index"))
         self.assertIn("Log out", self.browser.page_source)
 
@@ -308,3 +314,106 @@ class VisitorTest(LiveServerTestCase):
         self.assertEqual(self.browser.current_url, self.live_server_url+reverse("niji:index"))
         self.assertIn("Log out", self.browser.page_source)
         self.assertIn("test3", self.browser.page_source)
+
+
+class RegisteredUserTest(LiveServerTestCase):
+    """
+    Test as a registered user
+    """
+
+    def setUp(self):
+        self.browser = WebDriver()
+        self.browser.implicitly_wait(3)
+        self.n1 = Node.objects.create(
+            title='TestNodeOne',
+            description='The first test node'
+        )
+        self.u1 = User.objects.create_user(
+            username='test1', email='1@q.com', password='111'
+        )
+        self.u2 = User.objects.create_user(
+            username='test2', email='2@q.com', password='222'
+        )
+
+        # Create 198 topics
+        for i in range(1, 100):
+            setattr(
+                self,
+                't%s' % i,
+                Topic.objects.create(
+                    title='Test Topic %s' % i,
+                    user=self.u1,
+                    content_raw='This is test topic __%s__' % i,
+                    node=self.n1
+                )
+            )
+
+        for i in range(100, 199):
+            setattr(
+                self,
+                't%s' % i,
+                Topic.objects.create(
+                    title='Test Topic %s' % i,
+                    user=self.u2,
+                    content_raw='This is test topic __%s__' % i,
+                    node=self.n1
+                )
+            )
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_edit_own_topic(self):
+        self.browser.get(self.live_server_url+reverse('niji:index'))
+        login(self.browser, "test1", "111")
+        self.assertIn("Log out", self.browser.page_source)
+        own_topic = getattr(self, "t%s" % (random.choice(range(1, 100))))
+        self.browser.get(self.live_server_url+reverse("niji:topic", kwargs={"pk": own_topic.id}))
+        self.browser.find_element_by_link_text("Edit").click()
+        content_raw = self.browser.find_element_by_name("content_raw")
+        content_raw.clear()
+        content_raw.send_keys("This topic is edited")
+        self.browser.find_element_by_name("submit").click()
+        self.assertIn("This topic is edited", self.browser.page_source)
+
+    def test_edit_others_topic(self):
+        self.browser.get(self.live_server_url+reverse('niji:index'))
+        login(self.browser, "test1", "111")
+        self.assertIn("Log out", self.browser.page_source)
+        others_topic = getattr(self, "t%s" % (random.choice(range(100, 199))))
+        self.browser.get(self.live_server_url+reverse("niji:topic", kwargs={"pk": others_topic.id}))
+        self.assertNotIn(
+            "<span class=\"label label-success\">Edit</span>",
+            self.browser.page_source
+        )
+        self.browser.get(
+            self.live_server_url+reverse("niji:edit_topic", kwargs={"pk": others_topic.id})
+        )
+        self.assertIn("You are not allowed to edit other's topic", self.browser.page_source)
+
+    def test_reply_topic(self):
+        self.browser.get(self.live_server_url+reverse('niji:index'))
+        login(self.browser, "test1", "111")
+        self.assertIn("Log out", self.browser.page_source)
+        topic = getattr(self, "t%s" % (random.choice(range(1, 199))))
+        self.browser.get(self.live_server_url+reverse("niji:topic", kwargs={"pk": topic.id}))
+        content_raw = self.browser.find_element_by_name("content_raw")
+        content_raw.clear()
+        content_raw.send_keys("This is a reply")
+        self.browser.find_element_by_name("submit").click()
+        self.assertIn("This is a reply", self.browser.page_source)
+
+    def test_create_topic(self):
+        self.browser.get(self.live_server_url+reverse('niji:index'))
+        login(self.browser, "test1", "111")
+        self.assertIn("Log out", self.browser.page_source)
+        self.browser.get(self.live_server_url+reverse("niji:create_topic"))
+        node = self.browser.find_element_by_name("node")
+        node = Select(node)
+        title = self.browser.find_element_by_name("title")
+        content_raw = self.browser.find_element_by_name("content_raw")
+        node.select_by_visible_text(self.n1.title)
+        title.send_keys("test title")
+        content_raw.send_keys("this is content")
+        self.browser.find_element_by_name("submit").click()
+        self.assertIn("this is content", self.browser.page_source)
