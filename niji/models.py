@@ -25,7 +25,7 @@ USER_MODEL = settings.AUTH_USER_MODEL
 
 
 def _replace_username(link, matchobj):
-    return "@<a href={link}>{username}</a>{whitespace}".format(
+    return "@<a href=\"{link}\">{username}</a>{whitespace}".format(
         username=matchobj.group("username")[1:],
         whitespace=matchobj.group("whitespace"),
         link=link
@@ -38,7 +38,6 @@ def render_content(content_raw, sender):
     :param sender: user as username
     :return: (rendered_content, mentioned_user_list)
     """
-    # TODO: replace html to link to user
     content_rendered = mistune.markdown(content_raw)
     mentioned = list(set(re.findall(MENTION_REGEX, content_raw)))
     mentioned = [x for x in mentioned if x != sender]
@@ -148,7 +147,7 @@ class Post(models.Model):
         t.last_replied = t.get_last_replied()
         t.save(update_fields=['last_replied', 'reply_count'])
         for to in mentioned_users:
-                notify.delay(to=to.username, sender=self.user.username, post=self.pk)
+            notify.delay(to=to.username, sender=self.user.username, post=self.pk)
 
     def delete(self, *args, **kwargs):
         super(Post, self).delete(*args, **kwargs)

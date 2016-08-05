@@ -2,6 +2,7 @@
 from django.test import TestCase, LiveServerTestCase
 from django.utils.translation import ugettext as _
 from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.common.keys import Keys
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from .models import Topic, Node, Post, Notification, Appendix
@@ -110,6 +111,10 @@ class TopicModelTest(TestCase):
         )
         self.assertEqual(self.u2.received_notifications.count(), 1)
         notification = Notification.objects.get(pk=1)
+        self.assertIn(
+            '<a href="%s">test2</a>' % (reverse("niji:user_info", kwargs={"pk": self.u2.pk})),
+            t.content_rendered
+        )
         self.assertEqual(notification.topic_id, t.pk)
         self.assertEqual(notification.sender_id, self.u1.pk)
         self.assertEqual(notification.to_id, self.u2.pk)
@@ -271,3 +276,35 @@ class VisitorTest(LiveServerTestCase):
         self.browser.get(self.live_server_url+reverse('niji:node', kwargs={'pk': self.n1.pk}))
         topics = self.browser.find_elements_by_css_selector('ul.topic-list > li')
         self.assertEqual(len(topics), 30)
+
+    def test_user_login(self):
+        self.browser.get(self.live_server_url+reverse('niji:index'))
+        self.assertNotIn("Log out", self.browser.page_source)
+        login_btn = self.browser.find_element_by_xpath(
+            "//*[@id=\"main\"]/div/div[2]/div[1]/div[2]/div/div[1]/a"
+        )
+        login_btn.click()
+        username = self.browser.find_element_by_name('username')
+        password = self.browser.find_element_by_name('password')
+        username.send_keys("test1")
+        password.send_keys("111")
+        password.send_keys(Keys.RETURN)
+        self.assertEqual(self.browser.current_url, self.live_server_url+reverse("niji:index"))
+        self.assertIn("Log out", self.browser.page_source)
+
+    def test_usr_reg(self):
+        self.browser.get(self.live_server_url+reverse('niji:index'))
+        self.browser.find_element_by_link_text("Reg").click()
+        self.assertEqual(self.browser.current_url, self.live_server_url+reverse("niji:reg"))
+        username = self.browser.find_element_by_name('username')
+        email = self.browser.find_element_by_name('email')
+        password1 = self.browser.find_element_by_name('password1')
+        password2 = self.browser.find_element_by_name('password2')
+        username.send_keys("test3")
+        password1.send_keys("333")
+        password2.send_keys("333")
+        email.send_keys("test3@example.com")
+        password1.send_keys(Keys.RETURN)
+        self.assertEqual(self.browser.current_url, self.live_server_url+reverse("niji:index"))
+        self.assertIn("Log out", self.browser.page_source)
+        self.assertIn("test3", self.browser.page_source)
