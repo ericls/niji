@@ -315,6 +315,29 @@ class VisitorTest(LiveServerTestCase):
         self.assertIn("Log out", self.browser.page_source)
         self.assertIn("test3", self.browser.page_source)
 
+    def test_user_topic(self):
+        self.browser.get(self.live_server_url+reverse("niji:user_topics", kwargs={"pk": self.u1.id}))
+        self.assertIn("UID:", self.browser.page_source)
+
+    def test_user_info(self):
+        self.browser.get(self.live_server_url+reverse("niji:user_info", kwargs={"pk": self.u1.id}))
+        self.assertIn("Topics created by %s" % self.u1.username, self.browser.page_source)
+
+    def test_search(self):
+        self.browser.get(self.live_server_url+reverse("niji:search", kwargs={"keyword": "test"}))
+        self.assertIn("Search: test", self.browser.page_source)
+
+    def test_pagination(self):
+        self.browser.get(self.live_server_url+reverse("niji:index", kwargs={"page": 2}))
+        self.assertIn("«", self.browser.page_source)
+        prev = self.browser.find_element_by_link_text("«")
+        prev.click()
+        self.assertNotIn("«", self.browser.page_source)
+        self.assertIn("»", self.browser.page_source)
+        nxt = self.browser.find_element_by_link_text("»")
+        nxt.click()
+        self.assertEqual(self.browser.current_url, self.live_server_url+reverse("niji:index", kwargs={"page": 2}))
+
 
 class RegisteredUserTest(LiveServerTestCase):
     """
