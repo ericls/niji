@@ -440,3 +440,16 @@ class RegisteredUserTest(LiveServerTestCase):
         content_raw.send_keys("this is content")
         self.browser.find_element_by_name("submit").click()
         self.assertIn("this is content", self.browser.page_source)
+
+    def test_create_appendix(self):
+        self.browser.get(self.live_server_url+reverse('niji:index'))
+        login(self.browser, "test1", "111")
+        self.assertIn("Log out", self.browser.page_source)
+        own_topic = getattr(self, "t%s" % (random.choice(range(1, 100))))
+        self.browser.get(self.live_server_url+reverse("niji:topic", kwargs={"pk": own_topic.id}))
+        self.browser.find_element_by_link_text("Append").click()
+        content_raw = self.browser.find_element_by_name("content_raw")
+        content_raw.clear()
+        content_raw.send_keys("This is an appendix")
+        self.browser.find_element_by_name("submit").click()
+        self.assertIn("This is an appendix", self.browser.page_source)
