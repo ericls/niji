@@ -13,10 +13,10 @@
             {% for notification in notifications %}
                 <li class="list-group-item notification-entry">
                     <div class="row">
-                        <div class="col-xs-1">
+                        <div class="col-xs-3">
                             <img src="{% avatar_url notification.sender 28 %}">
                         </div>
-                        <div class="col-xs-11">
+                        <div class="col-xs-9">
                             <div class="notification-meta">
                                 {% url 'niji:user_info' notification.sender_id as user_url %}
                                 {% if notification.topic %}
