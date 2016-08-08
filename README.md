@@ -4,7 +4,7 @@
 
 > NIJI is a forum APP for Django projects.
 >
-> NIJI is developed with the idea that it should be easily integreated into existing Django projects
+> NIJI is developed with the idea that it should be easily integrated into existing Django projects
 
 ## Quick Installation (Integration)
 
@@ -86,6 +86,15 @@ celery -A project_name worker -l INFO
 
 ## Other Settings
 
+### Use different login and reg views.
+
+By default, the login and reg views are `niji:login` and `niji:reg`, however those views are not well tested and many Django sites have their own account system. The following settings can be used to override the login and reg views. Suppose your urls to login and reg views are named `account:login` and `account:reg` respectively.
+
+```
+NIJI_LOGIN_URL_NAME = "account:login"
+NIJI_REG_URL_NAME = "account:reg"
+```
+
 ### Use markdown editor with preview (django-pagedown)
 
 Django-pagedown editor is automatically enabled if you have `pagedown` in your `INSTALLED_APPS`
@@ -114,7 +123,7 @@ CELERY_ALWAYS_EAGER = True
 BROKER_BACKEND = 'memory'
 ```
 
-With these settings present, you don't need to run a seperate celery worker.
+With these settings present, you don't need to run a separate celery worker.
 
 And the tasks will be executed in a synchronous manner.
 

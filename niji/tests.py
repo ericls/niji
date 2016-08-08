@@ -23,6 +23,50 @@ def login(browser, username_text, password_text):
     password.send_keys(Keys.RETURN)
 
 
+class LoginRegUrlSettingsTest(LiveServerTestCase):
+
+    def setUp(self):
+        self.browser = WebDriver()
+        self.browser.implicitly_wait(3)
+        self.n1 = Node.objects.create(
+            title='TestNodeOne',
+            description='The first test node'
+        )
+        self.u1 = User.objects.create_user(
+            username='test1', email='1@q.com', password='111'
+        )
+        self.t1 = Topic.objects.create(
+            title='Test Topic 1',
+            user=self.u1,
+            content_raw='This is test topic __1__',
+            node=self.n1,
+        )
+
+    def tearDown(self):
+        self.browser.quit()
+
+    @override_settings(NIJI_LOGIN_URL_NAME="niji:reg")
+    def test_login_url_name(self):
+        self.browser.get(self.live_server_url+reverse("niji:index"))
+        login_btn = self.browser.find_element_by_link_text("Log in")
+        self.assertEqual(login_btn.get_attribute("href"), self.live_server_url+reverse("niji:reg"))
+
+        self.browser.get(self.live_server_url+reverse("niji:topic", kwargs={"pk": self.t1.pk}))
+        login_link = self.browser.find_element_by_link_text("Login")
+        self.assertEqual(login_link.get_attribute("href"), self.live_server_url+reverse("niji:reg"))
+
+    @override_settings(NIJI_REG_URL_NAME="niji:login")
+    @override_settings(DEBUG=True)
+    def test_reg_url_name(self):
+        self.browser.get(self.live_server_url+reverse("niji:index"))
+        reg_btn = self.browser.find_element_by_link_text("Reg")
+        self.assertEqual(reg_btn.get_attribute("href"), self.live_server_url+reverse("niji:login"))
+
+        self.browser.get(self.live_server_url+reverse("niji:topic", kwargs={"pk": self.t1.pk}))
+        reg_link = self.browser.find_element_by_link_text("Create a New User")
+        self.assertEqual(reg_link.get_attribute("href"), self.live_server_url+reverse("niji:login"))
+
+
 class TopicModelTest(TestCase):
 
     def setUp(self):

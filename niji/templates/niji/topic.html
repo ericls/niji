@@ -101,8 +101,8 @@
                 </form>
             {% else %}
                 <div class="alert alert-warning" role="alert">
-                {% url 'niji:login' as login_url %}
-                {% url 'niji:reg' as reg_url %}
+                {% url niji_login_url_name as login_url %}
+                {% url niji_reg_url_name as reg_url %}
                 {% blocktrans %}
                     Please <a href="{{ login_url }}">Login</a> or <a href="{{ reg_url }}">Create a New User</a> to reply
                 {% endblocktrans %}

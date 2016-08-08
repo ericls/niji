@@ -4,7 +4,7 @@ A settings file for running tests
 
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 SECRET_KEY = 'testsettings'
 DEBUG = True
@@ -79,9 +79,9 @@ TEMPLATES[0]['OPTIONS']['context_processors'].append("niji.context_processors.ni
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-BROKER_BACKEND='memory'
-CELERY_EAGER_PROPAGATES_EXCEPTIONS=True
-CELERY_ALWAYS_EAGER=True
+BROKER_BACKEND = 'memory'
+CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
+CELERY_ALWAYS_EAGER = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "niji/static")
