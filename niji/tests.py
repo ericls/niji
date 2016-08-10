@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase, LiveServerTestCase
 from django.utils.translation import ugettext as _
-from selenium.webdriver.phantomjs.webdriver import WebDriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from django.core.urlresolvers import reverse
@@ -9,6 +8,14 @@ from django.contrib.auth.models import User
 from .models import Topic, Node, Post, Notification, Appendix
 from django.test.utils import override_settings
 import random
+import os
+
+if os.environ.get('TEST_USE_FIREFOX'):
+    from selenium.webdriver.firefox.webdriver import WebDriver
+elif os.environ.get('TEST_USR_CHROME'):
+    from selenium.webdriver.chrome.webdriver import WebDriver
+else:
+    from selenium.webdriver.phantomjs.webdriver import WebDriver
 
 
 def login(browser, username_text, password_text):
