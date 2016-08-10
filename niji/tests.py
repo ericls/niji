@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase, LiveServerTestCase
 from django.utils.translation import ugettext as _
-from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.phantomjs.webdriver import WebDriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from django.core.urlresolvers import reverse
@@ -21,6 +21,148 @@ def login(browser, username_text, password_text):
     username.send_keys(username_text)
     password.send_keys(password_text)
     password.send_keys(Keys.RETURN)
+
+
+class TopicOrderingTest(LiveServerTestCase):
+
+    def setUp(self):
+        self.browser = WebDriver()
+        self.browser.implicitly_wait(3)
+        self.n1 = Node.objects.create(
+            title='TestNodeOne',
+            description='The first test node'
+        )
+        self.u1 = User.objects.create_user(
+            username='test1', email='1@q.com', password='111'
+        )
+        # Create 99 topics
+        for i in range(1, 100):
+            setattr(
+                self,
+                't%s' % i,
+                Topic.objects.create(
+                    title='Test Topic %s' % i,
+                    user=self.u1,
+                    content_raw='This is test topic __%s__' % i,
+                    node=self.n1
+                )
+            )
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_default_ordering_without_settings(self):
+        self.browser.get(self.live_server_url+reverse("niji:index"))
+        first_topic_title = self.browser.find_element_by_class_name(
+            "entry-link"
+        ).text
+        self.assertEqual(first_topic_title, self.t99.title)
+        Post.objects.create(
+            topic=self.t1,
+            content_raw='reply to post __1__',
+            user=self.u1,
+        )
+        self.browser.get(self.browser.current_url)
+        first_topic_title = self.browser.find_element_by_class_name(
+            "entry-link"
+        ).text
+        self.assertEqual(first_topic_title, self.t1.title)
+
+    @override_settings(NIJI_DEFAULT_TOPIC_ORDERING="-pub_date")
+    def test_default_ordering_with_settings(self):
+        self.browser.get(self.live_server_url+reverse("niji:index"))
+        first_topic_title = self.browser.find_element_by_class_name(
+            "entry-link"
+        ).text
+        self.assertEqual(first_topic_title, self.t99.title)
+        Post.objects.create(
+            topic=self.t1,
+            content_raw='reply to post __1__',
+            user=self.u1,
+        )
+        self.browser.get(self.browser.current_url)
+        first_topic_title = self.browser.find_element_by_class_name(
+            "entry-link"
+        ).text
+        self.assertEqual(first_topic_title, self.t99.title)
+
+    def test_user_specified_ordering_last_replied(self):
+        self.browser.get(self.live_server_url+reverse("niji:index"))
+        self.browser.find_element_by_link_text(
+            "Last Replied"
+        ).click()
+        first_topic_title = self.browser.find_element_by_class_name(
+            "entry-link"
+        ).text
+        self.assertEqual(first_topic_title, self.t99.title)
+
+    def test_user_specified_ordering_pub_date(self):
+        Post.objects.create(
+            topic=self.t1,
+            content_raw='reply to post __1__',
+            user=self.u1,
+        )
+        self.browser.get(self.live_server_url+reverse("niji:index"))
+        self.browser.find_element_by_link_text(
+            "Topic Date"
+        ).click()
+        first_topic_title = self.browser.find_element_by_class_name(
+            "entry-link"
+        ).text
+        self.assertEqual(first_topic_title, self.t99.title)
+
+    def test_user_specified_ordering_last_replied_pagination(self):
+        self.browser.get(self.live_server_url+reverse("niji:index"))
+        self.browser.find_element_by_link_text(
+            "Last Replied"
+        ).click()
+        res = self.client.get(self.browser.current_url)
+        request = res.wsgi_request
+        self.assertEqual(request.GET.get("order"), "-last_replied")
+        self.browser.find_element_by_link_text("»").click()
+        res = self.client.get(self.browser.current_url)
+        request = res.wsgi_request
+        self.assertEqual(request.GET.get("order"), "-last_replied")
+
+    def test_user_specified_ordering_node_view(self):
+        Post.objects.create(
+            topic=self.t1,
+            content_raw='reply to post __1__',
+            user=self.u1,
+        )
+        self.browser.get(
+            self.live_server_url+reverse(
+                "niji:node",
+                kwargs={"pk": self.n1.pk}
+            )
+        )
+        self.browser.find_element_by_link_text(
+            "Topic Date"
+        ).click()
+        first_topic_title = self.browser.find_element_by_class_name(
+            "entry-link"
+        ).text
+        self.assertEqual(first_topic_title, self.t99.title)
+
+    def test_user_specified_ordering_search_view(self):
+        Post.objects.create(
+            topic=self.t1,
+            content_raw='reply to post __1__',
+            user=self.u1,
+        )
+        self.browser.get(
+            self.live_server_url+reverse(
+                "niji:search",
+                kwargs={"keyword": "test"}
+            )
+        )
+        self.browser.find_element_by_link_text(
+            "Topic Date"
+        ).click()
+        first_topic_title = self.browser.find_element_by_class_name(
+            "entry-link"
+        ).text
+        self.assertEqual(first_topic_title, self.t99.title)
 
 
 class LoginRegUrlSettingsTest(LiveServerTestCase):
@@ -56,7 +198,6 @@ class LoginRegUrlSettingsTest(LiveServerTestCase):
         self.assertEqual(login_link.get_attribute("href"), self.live_server_url+reverse("niji:reg"))
 
     @override_settings(NIJI_REG_URL_NAME="niji:login")
-    @override_settings(DEBUG=True)
     def test_reg_url_name(self):
         self.browser.get(self.live_server_url+reverse("niji:index"))
         reg_btn = self.browser.find_element_by_link_text("Reg")

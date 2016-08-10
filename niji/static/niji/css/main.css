@@ -58,6 +58,15 @@ img.user-avatar {
     height: 48px;
 }
 
+span.ordering {
+  font-size: 80%;
+  line-height: 200%;
+}
+
+span.ordering span:first-of-type::after {
+  content: "\007C";
+}
+
 /** User Panel **/
 .panel-username{
     margin-left: 1em;

@@ -1,7 +1,7 @@
 from django import template
 from django.utils.html import escape
 from django.contrib.auth.models import User
-from six.moves.urllib.parse import urlencode
+from six.moves.urllib.parse import urlencode, urlparse, parse_qs
 from django.core.urlresolvers import reverse
 from niji.models import ForumAvatar
 import hashlib
@@ -40,18 +40,35 @@ def avatar_url(user, size=48, no_gravatar=False):
 
 
 @register.simple_tag
-def change_page(request, page=1):
+def change_url(request, kwargs=None, query=None):
+    kwargs = kwargs or {}
+    query = query or {}
     rm = request.resolver_match
-    kwargs = rm.kwargs.copy()
-    if page == 1:
-        kwargs.pop('page', None)
-    else:
-        kwargs.update({'page': page})
-    return reverse(
+    _kwargs = rm.kwargs.copy()
+    _kwargs.update(kwargs)
+    if _kwargs.get("page") == 1:
+        _kwargs.pop('page', None)
+    qs = parse_qs(urlparse(request.get_full_path()).query)
+    qs.update(query)
+    path = reverse(
         '%s:%s' % (rm.namespace, rm.url_name),
         args=rm.args,
-        kwargs=kwargs,
+        kwargs=_kwargs,
     )
+    if (qs):
+        return "%s?%s" % (path, urlencode(qs, True))
+    else:
+        return path
+
+
+@register.simple_tag
+def change_page(request, page=1):
+    return change_url(request, {"page": page})
+
+
+@register.simple_tag
+def change_topic_ordering(request, ordering):
+    return change_url(request, None, {"order": ordering})
 
 
 @register.inclusion_tag('niji/includes/pagination.html', takes_context=True)

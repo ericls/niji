@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.views.generic import ListView
 from django.utils.translation import ugettext as _
 from django.utils.decorators import method_decorator
@@ -16,6 +17,21 @@ import re
 
 EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
 User = get_user_model()
+
+
+def get_default_ordering():
+    return getattr(
+        settings,
+        "NIJI_DEFAULT_TOPIC_ORDERING",
+        "-last_replied"
+    )
+
+
+def get_topic_ordering(request):
+    query_order = request.GET.get("order", "")
+    if query_order in ["-last_replied", "last_replied", "pub_date", "-pub_date"]:
+        return query_order
+    return get_default_ordering()
 
 
 # Create your views here.
@@ -30,12 +46,15 @@ class Index(ListView):
             'user', 'node'
         ).prefetch_related(
             'user__forum_avatar'
+        ).order_by(
+            get_topic_ordering(self.request)
         )
 
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
         context['panel_title'] = _('New Topics')
         context['title'] = _('Index')
+        context['show_order'] = True
         return context
 
 
@@ -52,12 +71,15 @@ class NodeView(ListView):
             'user', 'node'
         ).prefetch_related(
             'user__forum_avatar'
+        ).order_by(
+            get_topic_ordering(self.request)
         )
 
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
         context['node'] = node = Node.objects.get(pk=self.kwargs.get('pk'))
         context['title'] = context['panel_title'] = node.title
+        context['show_order'] = True
         return context
 
 
@@ -148,11 +170,14 @@ class SearchView(ListView):
             'user', 'node'
         ).prefetch_related(
             'user__forum_avatar'
+        ).order_by(
+            get_topic_ordering(self.request)
         )
 
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
         context['title'] = context['panel_title'] = _('Search: ') + self.kwargs.get('keyword')
+        context['show_order'] = True
         return context
 
 

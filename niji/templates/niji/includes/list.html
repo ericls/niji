@@ -8,6 +8,17 @@
     <div class="panel panel-default">
         <div class="panel-body panel-subtitle">
             <span class="label label-success">{{ panel_title }}</span>
+            {% if show_order %}
+              <span class="pull-right ordering">
+                Order:
+                <span>
+                  <a href="{% change_topic_ordering request '-last_replied' %}">Last Replied</a>
+                </span>
+                <span>
+                  <a href="{% change_topic_ordering request '-pub_date' %}">Topic Date</a>
+                </span>
+              </span>
+            {% endif %}
         </div>
         <!-- List group -->
         <ul class="list-group topic-list">
