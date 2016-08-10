@@ -127,6 +127,11 @@ With these settings present, you don't need to run a separate celery worker.
 
 And the tasks will be executed in a synchronous manner.
 
+### Default topic ordering
+```
+NIJI_DEFAULT_TOPIC_ORDERING = "-last_replied"
+```
+
 ## Management Commands
 
 ### Re-render
