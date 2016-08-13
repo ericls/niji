@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'crispy_forms',
     'niji',
+    'rest_framework',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -85,3 +86,8 @@ CELERY_ALWAYS_EAGER = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "niji/static")
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    'PAGE_SIZE': 10
+}

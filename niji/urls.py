@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import url
+from django.conf.urls import url, include
+from rest_framework import routers
+from . import api
 from . import views
+
+api_router = routers.DefaultRouter()
+api_router.register(r'topics', api.TopicApiView)
 
 urlpatterns = [
     url(r'^page/(?P<page>[0-9]+)/$', views.Index.as_view(), name='index'),
@@ -23,4 +28,5 @@ urlpatterns = [
     url(r'^t/create/$', views.create_topic, name='create_topic'),
     url(r'^notifications/$', views.NotificationView.as_view(), name='notifications'),
     url(r'^avatar/$', views.upload_avatar, name="upload_avatar"),
+    url(r'^api/', include(api_router.urls)),
 ]

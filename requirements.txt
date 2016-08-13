@@ -6,3 +6,4 @@ celery[redis]
 django-crispy-forms>=1.6.0
 six
 pillow
+djangorestframework
