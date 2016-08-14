@@ -47,7 +47,7 @@ class Index(ListView):
         ).prefetch_related(
             'user__forum_avatar'
         ).order_by(
-            get_topic_ordering(self.request)
+            *['order', get_topic_ordering(self.request)]
         )
 
     def get_context_data(self, **kwargs):
@@ -72,7 +72,7 @@ class NodeView(ListView):
         ).prefetch_related(
             'user__forum_avatar'
         ).order_by(
-            get_topic_ordering(self.request)
+            *['order', get_topic_ordering(self.request)]
         )
 
     def get_context_data(self, **kwargs):

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import url, include
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import routers
 from . import api
 from . import views

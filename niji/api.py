@@ -1,11 +1,16 @@
 from rest_framework import viewsets
+from rest_framework.authentication import SessionAuthentication
 from niji.models import Topic
 from niji.serializers import TopicSerializer
 
 
+class SessionAuthenticationExemptCSRF(SessionAuthentication):
+
+    def enforce_csrf(self, request):
+        return
+
+
 class TopicApiView(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
+    authentication_classes = (SessionAuthenticationExemptCSRF,)
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer

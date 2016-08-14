@@ -33,11 +33,20 @@
                                 {{ topic.title }}
                             </a>
                             <p class="entry-meta">
-                                <a href="{% url 'niji:node' topic.node.pk %}">
+                                {% if topic.order <= 3 %}
+                                <span class="meta">
+                                    <span class="label label-info meta-top">
+                                        TOP
+                                    </span>
+                                </span>
+                                {% endif %}
+                                <span class="meta">
+                                    <a href="{% url 'niji:node' topic.node.pk %}">
                                         <span class="label label-default meta-node">
                                         {{ topic.node.title }}
                                         </span>
-                                </a>
+                                    </a>
+                                </span>
                                     <span class="meta meta-username">
                                         <a href="{% url 'niji:user_info' topic.user.pk %}">
                                             {{ topic.user.username }}

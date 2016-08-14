@@ -38,7 +38,7 @@ li.topic-entry:hover {
 span.meta{
     color: grey;
 }
-span.meta:before {
+.entry-meta .meta+.meta:before {
     content: "•";
     padding: 0 3px;
 }

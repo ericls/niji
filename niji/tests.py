@@ -2,17 +2,23 @@
 from django.test import TestCase, LiveServerTestCase
 from django.utils.translation import ugettext as _
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions
 from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse as api_reverse
 from django.contrib.auth.models import User
 from .models import Topic, Node, Post, Notification, Appendix
 from django.test.utils import override_settings
 import random
+import requests
+import json
 import os
 
 if os.environ.get('TEST_USE_FIREFOX'):
     from selenium.webdriver.firefox.webdriver import WebDriver
-elif os.environ.get('TEST_USR_CHROME'):
+elif os.environ.get('TEST_USE_CHROME'):
     from selenium.webdriver.chrome.webdriver import WebDriver
 else:
     from selenium.webdriver.phantomjs.webdriver import WebDriver
@@ -28,6 +34,152 @@ def login(browser, username_text, password_text):
     username.send_keys(username_text)
     password.send_keys(password_text)
     password.send_keys(Keys.RETURN)
+
+
+class APITest(LiveServerTestCase):
+
+    def setUp(self):
+        self.browser = WebDriver()
+        self.browser.implicitly_wait(3)
+        self.n1 = Node.objects.create(
+            title='TestNodeOne',
+            description='The first test node'
+        )
+        self.u1 = User.objects.create_user(
+            username='test1', email='1@q.com', password='111'
+        )
+        self.u1 = User.objects.create_user(
+            username='test2', email='2@q.com', password='222'
+        )
+        self.super_user = User.objects.create_user(
+            username='super', email='super@example.com', password='123'
+        )
+        self.super_user.is_superuser = True
+        self.super_user.is_staff = True
+        self.super_user.save()
+        # Create 99 topics
+        for i in range(1, 100):
+            setattr(
+                self,
+                't%s' % i,
+                Topic.objects.create(
+                    title='Test Topic %s' % i,
+                    user=self.u1,
+                    content_raw='This is test topic __%s__' % i,
+                    node=self.n1
+                )
+            )
+        # Create 99 replies to self.t1
+        for i in range(1, 100):
+            Post.objects.create(
+                topic=self.t1,
+                user=self.u1,
+                content_raw='This is reply to topic 1 (__%s__)' % i
+            )
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_unauthorized_access(self):
+        d = requests.get(self.live_server_url+api_reverse('niji:topic-list'))
+        self.assertEqual(d.status_code, 403)
+        d = requests.get(self.live_server_url+api_reverse('niji:topic-detail', kwargs={"pk": self.t1.pk}))
+        self.assertEqual(d.status_code, 403)
+
+        self.browser.get(self.live_server_url+reverse("niji:index"))
+        login(self.browser, 'test1', '111')
+        cookies = self.browser.get_cookies()
+        s = requests.Session()
+        s.headers = {'Content-Type': 'application/json'}
+        for cookie in cookies:
+            if cookie['name'] == 'csrftoken':
+                continue
+            s.cookies.set(cookie['name'], cookie['value'])
+        d = s.get(self.live_server_url + api_reverse('niji:topic-list'))
+        self.assertEqual(d.status_code, 403)
+        d = s.get(self.live_server_url + api_reverse('niji:topic-detail', kwargs={"pk": self.t1.pk}))
+        self.assertEqual(d.status_code, 403)
+
+    def test_move_topic_up(self):
+        lucky_topic1 = getattr(self, 't%s' % random.randint(1, 50))
+        d = requests.patch(
+            self.live_server_url + api_reverse('niji:topic-detail', kwargs={"pk": lucky_topic1.pk}),
+            json.dumps({"order": 1})
+        )
+        self.assertEqual(d.status_code, 403)
+        self.browser.get(self.live_server_url + reverse("niji:index"))
+        login(self.browser, 'super', '123')
+        cookies = self.browser.get_cookies()
+        s = requests.Session()
+        s.headers = {'Content-Type': 'application/json'}
+        for cookie in cookies:
+            if cookie['name'] == 'csrftoken':
+                continue
+            s.cookies.set(cookie['name'], cookie['value'])
+        d = s.patch(
+            self.live_server_url+api_reverse('niji:topic-detail', kwargs={"pk": lucky_topic1.pk}),
+            json.dumps({"order": 1})
+        ).json()
+        self.assertEqual(d["order"], 1)
+
+
+class StickToTopTest(LiveServerTestCase):
+
+    def setUp(self):
+        self.browser = WebDriver()
+        self.browser.implicitly_wait(3)
+        self.n1 = Node.objects.create(
+            title='TestNodeOne',
+            description='The first test node'
+        )
+        self.u1 = User.objects.create_user(
+            username='test1', email='1@q.com', password='111'
+        )
+        self.super_user = User.objects.create_user(
+            username='super', email='super@example.com', password='123'
+        )
+        self.super_user.is_superuser = True
+        self.super_user.is_staff = True
+        self.super_user.save()
+        # Create 99 topics
+        for i in range(1, 100):
+            setattr(
+                self,
+                't%s' % i,
+                Topic.objects.create(
+                    title='Test Topic %s' % i,
+                    user=self.u1,
+                    content_raw='This is test topic __%s__' % i,
+                    node=self.n1
+                )
+            )
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_stick_to_top_admin(self):
+        self.browser.get(self.live_server_url + reverse("niji:index"))
+        login(self.browser, 'super', '123')
+        self.assertIn("Log out", self.browser.page_source)
+
+        lucky_topic1 = getattr(self, 't%s' % random.randint(1, 50))
+
+        self.browser.get(self.live_server_url+reverse('niji:topic', kwargs={"pk": lucky_topic1.pk}))
+        self.browser.find_element_by_class_name('move-topic-up').click()
+        up_level = WebDriverWait(
+            self.browser, 10
+        ).until(
+            expected_conditions.presence_of_element_located(
+                (By.NAME, 'move-topic-up-level')
+            )
+        )
+        up_level = Select(up_level)
+        up_level.select_by_visible_text('1')
+        self.browser.execute_script("$('.modal-confirm').click()")
+        self.browser.get(self.live_server_url+reverse('niji:index'))
+        first_topic_title = self.browser.find_elements_by_class_name('entry-link')[0].text
+
+        self.assertEqual(first_topic_title, lucky_topic1.title)
 
 
 class TopicOrderingTest(LiveServerTestCase):

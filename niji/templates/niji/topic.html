@@ -20,7 +20,8 @@
                 </div>
                 <div class="col-xs-9 col-sm-10">
                     <p class="text-muted">
-                        <a href="{% url 'niji:user_info' topic.user.pk %}">{{ topic.user.username }}</a> <br/>
+                        <a href="{% url 'niji:user_info' topic.user.pk %}">{{ topic.user.username }}</a>
+                        <br/>
                         <span>Posted {{ topic.pub_date | naturaltime }} in <a class="text-primary" href="{% url 'niji:node' pk=topic.node.pk %}">{{ topic.node.title }}</a>, </span>
                         <span>{% blocktrans with view_count=topic.view_count %}viewed {{ view_count }} times{% endblocktrans %}</span>
                     </p>
@@ -48,6 +49,14 @@
                     <a href="{% url 'niji:edit_topic' pk=topic.pk %}"><span class="label label-success">{% trans 'Edit' %}</span></a>
                 {% endif %}
                 <a href="{% url 'niji:create_appendix' pk=topic.pk %}"><span class="label label-warning">{% trans 'Append' %}</span></a>
+            </div>
+        {% endif %}
+        {% if request.user.is_superuser %}
+            <div class="panel-footer">
+                <span>{% trans 'Moderations' %}: </span>
+                <a href="#" class="move-topic-up" data-toggle="modal" data-target="#moderation-modal" data-pk="{{ topic.pk }}" data-action="move-topic-up" data-api-url="{% url 'niji:topic-detail' topic.pk %}">
+                    <span class="label label-success">Up</span>
+                </a>
             </div>
         {% endif %}
     </div>
@@ -126,4 +135,83 @@
             });
         });
     </script>
+    {% if request.user.is_superuser %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.12.0/babel.min.js"></script>
+        <div id="moderation-modal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Modal title</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>One fine body&hellip;</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary modal-confirm">Save changes</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <script type="text/babel">
+            let patchTopic = function(url, data){
+                $.ajax({
+                    dataType: 'json',
+                    method: 'PATCH',
+                    url: url,
+                    data: data
+                }).done(()=>{
+                    $('#moderation-modal').find('.modal-body').html(`<p class="text-success">{% trans 'Operation successful' %}</p>`);
+                }).fail((xhr, status, error)=>{
+                    $('#moderation-modal').find('.modal-body').html(`<p class="text-danger">${status}</p>`);
+                    console.log(xhr.responseText);
+                    console.log(error);
+                }).always(()=>{
+                    $('.modal-confirm').hide();
+                });
+            };
+            $('#moderation-modal').on('show.bs.modal', function (event) {
+                $('.modal-confirm').show();
+                let button = $(event.relatedTarget);
+                let recipient = button.data('whatever');
+                let modal = $(this);
+                let modalTitle;
+                let modalBody;
+                let modalCb;
+                switch (button.data('action')) {
+                    case 'move-topic-up':
+                        modalTitle = '{% trans 'Stick to Top' %}';
+                        modalBody = `<form>
+                              <div class="form-group">
+                                <label for="recipient-name" class="control-label">{% trans 'Level (1 - Highest)' %}:</label>
+                                <select class="form-control" name="move-topic-up-level">
+                                  <option>1</option>
+                                  <option>2</option>
+                                  <option>3</option>
+                                  <option>{% trans "Don't stick to stop" %}</option>
+                                </select>
+                              </div>
+                            </form>`;
+                        modalCb = () => {
+                            let level = $('select[name="move-topic-up-level"]').val();
+                            if (level === "{% trans "Don't stick to stop" %}") {
+                                level = 10
+                            } else {
+                                level = parseInt(level)
+                            }
+                            patchTopic(
+                                button.data('api-url'), {order: level}
+                            )
+                        };
+                        break;
+                    default:
+                        modalTitle = modalBody = modalCb = '';
+                }
+                modal.find('.modal-confirm').click(modalCb);
+                modal.find('.modal-title').text(modalTitle);
+                modal.find('.modal-body').html(modalBody);
+            })
+        </script>
+    {% endif %}
 {% endblock %}
