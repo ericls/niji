@@ -54,9 +54,18 @@
         {% if request.user.is_superuser %}
             <div class="panel-footer">
                 <span>{% trans 'Moderations' %}: </span>
-                <a href="#" class="move-topic-up" data-toggle="modal" data-target="#moderation-modal" data-pk="{{ topic.pk }}" data-action="move-topic-up" data-api-url="{% url 'niji:topic-detail' topic.pk %}">
+                <a href="#" class="moderate-action move-topic-up" data-toggle="modal" data-target="#moderation-modal" data-pk="{{ topic.pk }}" data-action="move-topic-up" data-api-url="{% url 'niji:topic-detail' topic.pk %}">
                     <span class="label label-success">Up</span>
                 </a>
+                {% if topic.closed %}
+                    <a href="#" class="moderate-action open-topic" data-toggle="modal" data-target="#moderation-modal" data-pk="{{ topic.pk }}" data-action="open-topic" data-api-url="{% url 'niji:topic-detail' topic.pk %}">
+                        <span class="label label-info">Open</span>
+                    </a>
+                {% else %}
+                    <a href="#" class="moderate-action close-topic" data-toggle="modal" data-target="#moderation-modal" data-pk="{{ topic.pk }}" data-action="close-topic" data-api-url="{% url 'niji:topic-detail' topic.pk %}">
+                        <span class="label label-warning">Close</span>
+                    </a>
+                {% endif %}
             </div>
         {% endif %}
     </div>
@@ -104,18 +113,24 @@
     <div class="panel panel-default">
         <div class="panel-heading">{% trans "Leave a Reply"%}</div>
         <div class="panel-body">
-            {% if request.user.is_authenticated %}
-                <form action="{% url 'niji:topic' pk=topic.pk %}" method="POST">
-                    {% crispy form %}
-                </form>
-            {% else %}
+            {% if topic.closed %}
                 <div class="alert alert-warning" role="alert">
-                {% url niji_login_url_name as login_url %}
-                {% url niji_reg_url_name as reg_url %}
-                {% blocktrans %}
-                    Please <a href="{{ login_url }}">Login</a> or <a href="{{ reg_url }}">Create a New User</a> to reply
-                {% endblocktrans %}
+                    <p>{% trans "This topic is closed" %}</p>
                 </div>
+            {% else %}
+                {% if request.user.is_authenticated %}
+                    <form action="{% url 'niji:topic' pk=topic.pk %}" method="POST">
+                        {% crispy form %}
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning" role="alert">
+                        {% url niji_login_url_name as login_url %}
+                        {% url niji_reg_url_name as reg_url %}
+                        {% blocktrans %}
+                            Please <a href="{{ login_url }}">Login</a> or <a href="{{ reg_url }}">Create a New User</a> to reply
+                        {% endblocktrans %}
+                    </div>
+                {% endif %}
             {% endif %}
         </div>
     </div>
@@ -203,6 +218,20 @@
                             patchTopic(
                                 button.data('api-url'), {order: level}
                             )
+                        };
+                        break;
+                    case 'open-topic':
+                        modalTitle = "{% trans 'Open Topic' %}";
+                        modalBody = "{% trans 'Please confirm your action' %}";
+                        modalCb = () => {
+                            patchTopic(button.data('api-url'), {closed: false});
+                        };
+                        break;
+                    case 'close-topic':
+                        modalTitle = "{% trans 'Close Topic' %}";
+                        modalBody = "{% trans 'Please confirm your action' %}";
+                        modalCb = () => {
+                            patchTopic(button.data('api-url'), {closed: true});
                         };
                         break;
                     default:

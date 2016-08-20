@@ -122,6 +122,33 @@ class APITest(LiveServerTestCase):
         ).json()
         self.assertEqual(d["order"], 1)
 
+    def test_close_open_topic(self):
+        lucky_topic1 = getattr(self, 't%s' % random.randint(1, 50))
+        d = requests.patch(
+            self.live_server_url + api_reverse('niji:topic-detail', kwargs={"pk": lucky_topic1.pk}),
+            json.dumps({"closed": True})
+        )
+        self.assertEqual(d.status_code, 403)
+        self.browser.get(self.live_server_url + reverse("niji:index"))
+        login(self.browser, 'super', '123')
+        cookies = self.browser.get_cookies()
+        s = requests.Session()
+        s.headers = {'Content-Type': 'application/json'}
+        for cookie in cookies:
+            if cookie['name'] == 'csrftoken':
+                continue
+            s.cookies.set(cookie['name'], cookie['value'])
+        d = s.patch(
+            self.live_server_url + api_reverse('niji:topic-detail', kwargs={"pk": lucky_topic1.pk}),
+            json.dumps({"closed": True})
+        ).json()
+        self.assertEqual(d["closed"], True)
+        d = s.patch(
+            self.live_server_url + api_reverse('niji:topic-detail', kwargs={"pk": lucky_topic1.pk}),
+            json.dumps({"closed": False})
+        ).json()
+        self.assertEqual(d["closed"], False)
+
 
 class StickToTopTest(LiveServerTestCase):
 
@@ -769,6 +796,16 @@ class RegisteredUserTest(LiveServerTestCase):
         content_raw.send_keys("This is a reply")
         self.browser.find_element_by_name("submit").click()
         self.assertIn("This is a reply", self.browser.page_source)
+
+    def test_closed_topic(self):
+        self.browser.get(self.live_server_url + reverse('niji:index'))
+        login(self.browser, "test1", "111")
+        self.assertIn("Log out", self.browser.page_source)
+        topic = getattr(self, "t%s" % (random.choice(range(1, 199))))
+        topic.closed = True
+        topic.save()
+        self.browser.get(self.live_server_url + reverse("niji:topic", kwargs={"pk": topic.id}))
+        self.assertIn(_("This topic is closed"), self.browser.page_source)
 
     def test_create_topic(self):
         self.browser.get(self.live_server_url+reverse('niji:index'))

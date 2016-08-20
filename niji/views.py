@@ -110,7 +110,10 @@ class TopicView(ListView):
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
-        topic_id=self.kwargs.get('pk')
+        current = Topic.objects.visible().get(pk=self.kwargs.get('pk'))
+        if current.closed:
+            return HttpResponseForbidden("Topic closed")
+        topic_id = self.kwargs.get('pk')
         form = ReplyForm(
             request.POST,
             user=request.user,

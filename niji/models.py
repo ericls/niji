@@ -71,6 +71,7 @@ class Topic(models.Model):
     last_replied = models.DateTimeField(auto_now_add=True, db_index=True)
     order = models.IntegerField(default=10)
     hidden = models.BooleanField(default=False)
+    closed = models.BooleanField(default=False)
     objects = TopicQueryset.as_manager()
 
     raw_content_hash = None
