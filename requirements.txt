@@ -1,7 +1,7 @@
 mistune
 wheel>=0.24.0
 Django>=1.9
-xxhash==0.4.3
+xxhash==0.6.1
 celery[redis]
 django-crispy-forms>=1.6.0
 six
