@@ -14,6 +14,7 @@ from django.test.utils import override_settings
 import random
 import requests
 import json
+import time
 import os
 
 if os.environ.get('TEST_USE_FIREFOX'):
@@ -149,6 +150,51 @@ class APITest(LiveServerTestCase):
         ).json()
         self.assertEqual(d["closed"], False)
 
+    def test_hide_topic(self):
+        lucky_topic1 = getattr(self, 't%s' % random.randint(1, 50))
+        d = requests.patch(
+            self.live_server_url + api_reverse('niji:topic-detail', kwargs={"pk": lucky_topic1.pk}),
+            json.dumps({"closed": True})
+        )
+        self.assertEqual(d.status_code, 403)
+        self.browser.get(self.live_server_url + reverse("niji:index"))
+        login(self.browser, 'super', '123')
+        cookies = self.browser.get_cookies()
+        s = requests.Session()
+        s.headers = {'Content-Type': 'application/json'}
+        for cookie in cookies:
+            if cookie['name'] == 'csrftoken':
+                continue
+            s.cookies.set(cookie['name'], cookie['value'])
+        d = s.patch(
+            self.live_server_url + api_reverse('niji:topic-detail', kwargs={"pk": lucky_topic1.pk}),
+            json.dumps({"hidden": True})
+        ).json()
+        self.assertEqual(d["hidden"], True)
+
+    def test_hide_post(self):
+        lucky_post = random.choice(Post.objects.visible().all())
+        d = requests.patch(
+            self.live_server_url + api_reverse('niji:post-detail', kwargs={"pk": lucky_post.pk}),
+            json.dumps({"hidden": True})
+        )
+        self.assertEqual(d.status_code, 403)
+        self.browser.get(self.live_server_url + reverse("niji:index"))
+        login(self.browser, 'super', '123')
+        self.assertIn("Log out", self.browser.page_source)
+        cookies = self.browser.get_cookies()
+        s = requests.Session()
+        s.headers = {'Content-Type': 'application/json'}
+        for cookie in cookies:
+            if cookie['name'] == 'csrftoken':
+                continue
+            s.cookies.set(cookie['name'], cookie['value'])
+        d = s.patch(
+            self.live_server_url + api_reverse('niji:post-detail', kwargs={"pk": lucky_post.pk}),
+            json.dumps({"hidden": True})
+        ).json()
+        self.assertEqual(d["hidden"], True)
+
 
 class StickToTopTest(LiveServerTestCase):
 
@@ -202,6 +248,7 @@ class StickToTopTest(LiveServerTestCase):
         )
         up_level = Select(up_level)
         up_level.select_by_visible_text('1')
+        time.sleep(1)
         self.browser.execute_script("$('.modal-confirm').click()")
         self.browser.get(self.live_server_url+reverse('niji:index'))
         first_topic_title = self.browser.find_elements_by_class_name('entry-link')[0].text
@@ -656,6 +703,19 @@ class VisitorTest(LiveServerTestCase):
     def test_topic_page_content(self):
         self.browser.get(self.live_server_url+reverse('niji:topic', kwargs={'pk': self.t88.pk}))
         self.assertIn('This is test topic <strong>88</strong>', self.browser.page_source)
+
+    def test_hidden_post(self):
+        hidden_post = Post.objects.create(
+            topic=self.t1,
+            content_raw="i'm a reply 12138",
+            user=self.u1
+        )
+        self.browser.get(self.live_server_url+reverse('niji:topic', kwargs={'pk': self.t1.pk}))
+        self.assertIn("i'm a reply 12138", self.browser.page_source)
+        hidden_post.hidden = True
+        hidden_post.save()
+        self.browser.get(self.browser.current_url)
+        self.assertNotIn("i'm a reply 12138", self.browser.page_source)
 
     def test_node_page(self):
         self.browser.get(self.live_server_url+reverse('niji:node', kwargs={'pk': self.n1.pk}))

@@ -39,7 +39,7 @@ span.meta{
     color: grey;
 }
 .entry-meta .meta+.meta:before {
-    content: "•";
+    content: "\2022";
     padding: 0 3px;
 }
 

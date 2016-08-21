@@ -66,6 +66,9 @@
                         <span class="label label-warning">Close</span>
                     </a>
                 {% endif %}
+                <a href="#" class="moderate-action hide-topic" data-toggle="modal" data-target="#moderation-modal" data-pk="{{ topic.pk }}" data-action="hide-topic" data-api-url="{% url 'niji:topic-detail' topic.pk %}">
+                    <span class="label label-danger">Hide</span>
+                </a>
             </div>
         {% endif %}
     </div>
@@ -100,6 +103,14 @@
                     <p class="reply-link">
                         <a href="#" data-username="{{ post.user.username }}" class="reply-to">{% trans "Reply" %}</a>
                     </p>
+                    {% if request.user.is_superuser %}
+                        <hr>
+                        <p class="moderation-links">
+                            <a href="#" class="moderate-action hide-reply" data-toggle="modal" data-target="#moderation-modal" data-pk="{{ topic.pk }}" data-action="hide-reply" data-api-url="{% url 'niji:post-detail' post.pk %}">
+                                <span class="label label-danger">Hide</span>
+                            </a>
+                        </p>
+                    {% endif %}
                 </li>
             {% endfor %}
             {% if not posts %}
@@ -164,7 +175,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary modal-confirm">Save changes</button>
+                        <button type="button" class="btn btn-warning modal-confirm">Confirm</button>
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
@@ -232,6 +243,20 @@
                         modalBody = "{% trans 'Please confirm your action' %}";
                         modalCb = () => {
                             patchTopic(button.data('api-url'), {closed: true});
+                        };
+                        break;
+                    case 'hide-topic':
+                        modalTitle = "{% trans 'Hide Topic' %}";
+                        modalBody = "{% trans 'Please confirm your action' %}";
+                        modalCb = () => {
+                            patchTopic(button.data('api-url'), {hidden: true});
+                        };
+                        break;
+                    case 'hide-reply':
+                        modalTitle = "{% trans 'Hide Reply' %}";
+                        modalBody = "{% trans 'Please confirm your action' %}";
+                        modalCb = () => {
+                            patchTopic(button.data('api-url'), {hidden: true});
                         };
                         break;
                     default:

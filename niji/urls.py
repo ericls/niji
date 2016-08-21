@@ -7,6 +7,7 @@ from . import views
 
 api_router = routers.DefaultRouter()
 api_router.register(r'topics', api.TopicApiView)
+api_router.register(r'post', api.PostApiView)
 
 urlpatterns = [
     url(r'^page/(?P<page>[0-9]+)/$', views.Index.as_view(), name='index'),
