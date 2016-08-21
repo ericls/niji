@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.urlresolvers import reverse
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.translation import ugettext as _
 from functools import partial
 from niji.tasks import notify
 from PIL import Image
@@ -60,18 +61,18 @@ class TopicQueryset(models.QuerySet):
 
 @python_2_unicode_compatible
 class Topic(models.Model):
-    user = models.ForeignKey(USER_MODEL, related_name='topics')
-    title = models.CharField(max_length=120)
-    content_raw = models.TextField()
-    content_rendered = models.TextField(default='', blank=True)
-    view_count = models.IntegerField(default=0)
-    reply_count = models.IntegerField(default=0)
-    node = models.ForeignKey('Node', related_name='topics')
-    pub_date = models.DateTimeField(auto_now_add=True, db_index=True)
-    last_replied = models.DateTimeField(auto_now_add=True, db_index=True)
-    order = models.IntegerField(default=10)
-    hidden = models.BooleanField(default=False)
-    closed = models.BooleanField(default=False)
+    user = models.ForeignKey(USER_MODEL, related_name='topics', verbose_name=_("user"))
+    title = models.CharField(max_length=120, verbose_name=_("title"))
+    content_raw = models.TextField(verbose_name=_("raw content"))
+    content_rendered = models.TextField(default='', blank=True, verbose_name=_("rendered content"))
+    view_count = models.IntegerField(default=0, verbose_name=_("view count"))
+    reply_count = models.IntegerField(default=0, verbose_name=_("reply count"))
+    node = models.ForeignKey('Node', related_name='topics', verbose_name=_("node"))
+    pub_date = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=_("published time"))
+    last_replied = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=_("last replied time"))
+    order = models.IntegerField(default=10, verbose_name=_("order"))
+    hidden = models.BooleanField(default=False, verbose_name=_("hidden"))
+    closed = models.BooleanField(default=False, verbose_name=_("closed"))
     objects = TopicQueryset.as_manager()
 
     raw_content_hash = None
@@ -120,12 +121,12 @@ class PostQueryset(models.QuerySet):
 
 @python_2_unicode_compatible
 class Post(models.Model):
-    topic = models.ForeignKey('Topic', related_name='replies')
-    user = models.ForeignKey(USER_MODEL, related_name='posts')
-    content_raw = models.TextField()
-    content_rendered = models.TextField(default='')
-    pub_date = models.DateTimeField(auto_now_add=True)
-    hidden = models.BooleanField(default=False)
+    topic = models.ForeignKey('Topic', related_name='replies', verbose_name=_("topic"))
+    user = models.ForeignKey(USER_MODEL, related_name='posts', verbose_name=_("user"))
+    content_raw = models.TextField(verbose_name=_("raw content"))
+    content_rendered = models.TextField(default='', verbose_name=_("rendered content"))
+    pub_date = models.DateTimeField(auto_now_add=True, verbose_name=_("published time"))
+    hidden = models.BooleanField(default=False, verbose_name=_("hidden"))
     objects = PostQueryset.as_manager()
 
     raw_content_hash = None
@@ -160,12 +161,12 @@ class Post(models.Model):
 
 @python_2_unicode_compatible
 class Notification(models.Model):
-    sender = models.ForeignKey(USER_MODEL, related_name='sent_notifications')
-    to = models.ForeignKey(USER_MODEL, related_name='received_notifications')
-    topic = models.ForeignKey('Topic', null=True)
-    post = models.ForeignKey('Post', null=True)
-    read = models.BooleanField(default=False)
-    pub_date = models.DateTimeField(auto_now_add=True)
+    sender = models.ForeignKey(USER_MODEL, related_name='sent_notifications', verbose_name=_("sender"))
+    to = models.ForeignKey(USER_MODEL, related_name='received_notifications', verbose_name=_("recipient"))
+    topic = models.ForeignKey('Topic', null=True, verbose_name=_("topic"))
+    post = models.ForeignKey('Post', null=True, verbose_name=_("reply"))
+    read = models.BooleanField(default=False, verbose_name=_("read"))
+    pub_date = models.DateTimeField(auto_now_add=True, verbose_name=_("published time"))
 
     def __str__(self):
         return 'Notification from %s to %s' % (self.sender.username, self.to.username)
@@ -173,10 +174,10 @@ class Notification(models.Model):
 
 @python_2_unicode_compatible
 class Appendix(models.Model):
-    topic = models.ForeignKey('Topic')
-    pub_date = models.DateTimeField(auto_now_add=True)
-    content_raw = models.TextField()
-    content_rendered = models.TextField(default='', blank=True)
+    topic = models.ForeignKey('Topic', verbose_name=_("topic"))
+    pub_date = models.DateTimeField(auto_now_add=True, verbose_name=_("published time"))
+    content_raw = models.TextField(verbose_name=_("raw content"))
+    content_rendered = models.TextField(default='', blank=True, verbose_name=_("rendered content"))
 
     raw_content_hash = None
 
@@ -197,8 +198,8 @@ class Appendix(models.Model):
 
 @python_2_unicode_compatible
 class Node(models.Model):
-    title = models.CharField(max_length=30)
-    description = models.TextField(default='', blank=True)
+    title = models.CharField(max_length=30, verbose_name=_("title"))
+    description = models.TextField(default='', blank=True, verbose_name=_("description"))
 
     def __str__(self):
         return self.title
