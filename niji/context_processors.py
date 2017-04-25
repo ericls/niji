@@ -9,6 +9,8 @@ def niji_processor(request):
     site_name = _(getattr(settings, 'NIJI_SITE_NAME', ''))
     niji_login_url_name = getattr(settings, 'NIJI_LOGIN_URL_NAME', 'niji:login')
     niji_reg_url_name = getattr(settings, 'NIJI_REG_URL_NAME', 'niji:reg')
+    niji_login_next = request.get_full_path()    
+    
     try:
         unread_count = request.user.received_notifications.filter(read=False).count()
     except AttributeError:
@@ -18,5 +20,6 @@ def niji_processor(request):
         'unread_count': unread_count,
         'site_name': site_name,
         'niji_login_url_name': niji_login_url_name,
-        'niji_reg_url_name': niji_reg_url_name
+        'niji_reg_url_name': niji_reg_url_name,
+        'niji_login_next': niji_login_next
     }
