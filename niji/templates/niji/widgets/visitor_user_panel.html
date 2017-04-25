@@ -6,7 +6,7 @@
         <hr/>
         <div class="row">
             <div class="col-md-6">
-                <a href="{% url niji_login_url_name %}" class="btn btn-block btn-info">{% trans 'Log in' %}</a>
+                <a href="{% url niji_login_url_name %}{% if niji_login_next %}?next={{niji_login_next }}{% endif %}" class="btn btn-block btn-info">{% trans 'Log in' %}</a>
             </div>
             <div class="col-md-6">
                 <a href="{% url niji_reg_url_name %}" class="btn btn-block btn-default">{% trans 'Reg' %}</a>
