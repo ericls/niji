@@ -240,7 +240,7 @@ class StickToTopTest(LiveServerTestCase):
         self.browser.get(self.live_server_url+reverse('niji:topic', kwargs={"pk": lucky_topic1.pk}))
         self.browser.find_element_by_class_name('move-topic-up').click()
         up_level = WebDriverWait(
-            self.browser, 10
+            self.browser, 30
         ).until(
             expected_conditions.presence_of_element_located(
                 (By.NAME, 'move-topic-up-level')

@@ -6,10 +6,12 @@ python:
   - "2.7"
   - "3.4"
   - "3.5"
+  - "3.6"
 env:
   - DJANGO='django>=1.8.0,<1.9.0'
   - DJANGO='django>=1.9.0,<1.10.0'
   - DJANGO='django>=1.10.0'
+  - DJANGO='django>=1.11.0'
   - DJANGO='https://github.com/django/django/archive/master.tar.gz'
 install:
   - pip install selenium
@@ -38,5 +40,7 @@ matrix:
       env: DJANGO='https://github.com/django/django/archive/master.tar.gz'
     - python: "3.5"
       env: DJANGO='django>=1.7.0,<1.8.0'
+    - python: "3.6"
+      env: DJANGO='django>=1.8.0,<1.9.0'
   allow_failures:
     - env: DJANGO='https://github.com/django/django/archive/master.tar.gz'
